@@ -1,6 +1,6 @@
 # Claude Full-Stack App
 
-Two ~40-minute lectures for Code Platoon Phase III, Building Applications → Full-Stack Applications. Live site: https://kabeier.github.io/claude-fullstack-app/
+Two ~40-minute lectures for Code Platoon Phase III, Building Applications → Full-Stack Applications. Live site: https://kabeier.github.io/Claude-and-full-stack-apps/
 
 Each deck is a single HTML file. Open it, press **P** for presenter notes in a second window, **T** to start the lecture clock, **O** for the slide overview, **F** for fullscreen.
 
