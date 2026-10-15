@@ -13,14 +13,21 @@
 | `reset-supabase.sql` | After a dry run: removes all policies and empties the 5 tables |
 | `Ticked-API.postman_collection.json` | Backup for the Postman demo (Postman → Import) |
 | `restructure.sh` | Backup for the restructure prompt |
+| `start-ticked/` | **The starting point:** Ticked as the database lecture left it (app in the root, `supabase/` inside with the db skill, `schema.sql`, stories, ERD). No `.mcp.json` (it holds your project ref, so it's never committed) |
 | `backup-ticked-fullstack/` | Ticked after Lecture 2: restructured and connected. Tested against PostgREST (the engine behind Supabase's API) with this schema and these policies |
 
 ## Setup (once, before Lecture 1)
 
-Starting point: `~/demos/ticked` as the database lecture left it (the app in the root, `supabase/` inside with `.mcp.json`, the db skill, `schema.sql`), and the `task-manager` Supabase project with its 5 tables. **Keep that Supabase project.**
+Starting point: `~/demos/ticked` as the database lecture left it (the app in the root, `supabase/` inside with `.mcp.json`, the db skill, `schema.sql`), and the `task-manager` Supabase project with its 5 tables. **Keep that Supabase project.** `demo-kit/start-ticked/` is a copy of that folder, minus `.mcp.json` and `node_modules`.
 
 ```bash
 cp -r /mnt/storage/CP/new_Lectures/claude-fs-apps/demo-kit ~/fs-kit
+
+# No ~/demos/ticked yet (or want a clean one)? Start from the kit copy:
+#   rm -rf ~/demos/ticked && cp -r ~/fs-kit/start-ticked ~/demos/ticked
+#   cd ~/demos/ticked && npm install
+#   cd supabase && claude mcp add --scope project --transport http supabase "<command from Supabase → Connect → MCP>"
+#   (or copy your old supabase/.mcp.json in)
 
 claude mcp list                  # context7 and playwright, both connected
 ls ~/demos/ticked/supabase/.claude/agents     # supabase-agent.md should be there
@@ -28,7 +35,7 @@ ls ~/demos/ticked/supabase/.claude/agents     # supabase-agent.md should be ther
 
 # Make it a git repo (Lecture 2 shows .env staying out of git)
 cd ~/demos/ticked
-git init 2>/dev/null; git add -A && git commit -qm "Ticked: front-end + database"
+git init 2>/dev/null; printf '.mcp.json\n' >> .gitignore; git add -A && git commit -qm "Ticked: front-end + database"
 
 # Snapshot for resetting after the dry run
 cp -a ~/demos/ticked ~/demos/ticked-snapshot

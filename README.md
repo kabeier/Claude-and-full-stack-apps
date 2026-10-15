@@ -1,6 +1,6 @@
-# Full-Stack Apps
+# Claude Full-Stack App
 
-Two ~40-minute lectures for Code Platoon Phase III, Building Applications → Full-Stack Applications. Live site: https://kabeier.github.io/Full-Stack-Apps/
+Two ~40-minute lectures for Code Platoon Phase III, Building Applications → Full-Stack Applications. Live site: https://kabeier.github.io/claude-fullstack-app/
 
 Each deck is a single HTML file. Open it, press **P** for presenter notes in a second window, **T** to start the lecture clock, **O** for the slide overview, **F** for fullscreen.
 
@@ -34,6 +34,8 @@ Each deck is a single HTML file. Open it, press **P** for presenter notes in a s
 - `lecture-1-restful-apis/`: slides
 - `lecture-2-connecting-it-all/`: slides, Where Did It Break?
 - `demo-kit/`: everything for the live demos. Start with `RUNBOOK.md`
+  - `start-ticked/`: the starting point, Ticked as the database lecture left it (no `.mcp.json`)
+  - `backup-ticked-fullstack/`: the finished, connected version
 - `diagrams/`: tldraw diagrams (`.png` + editable `.tldr`)
 - `shared/`: the slide engine (same as the earlier lecture sites)
 
