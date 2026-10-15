@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Did It Break?</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f4f6f9; --grid:#dce3ee; --ink:#1b2230; --muted:#5b6577; --blue:#2552c9; --green:#13795b; --red:#c8372d; --sticky:#ffe76a; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: var(--ink); display: grid; grid-template-rows: auto auto 1fr auto;
+    background: var(--paper) linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 40px 40px,
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 40px 40px; }
+  header { padding: 20px 36px 0; display: flex; justify-content: space-between; align-items: baseline; gap: 20px; }
+  h1 { font: 800 40px 'Bricolage Grotesque', sans-serif; margin: 0; letter-spacing: -0.02em; }
+  .count { font: 700 20px 'JetBrains Mono', monospace; color: var(--muted); }
+  .bank { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 36px 0; }
+  .bank button { font: 700 22px 'JetBrains Mono', monospace; background: #fff; border: 2px solid var(--ink); border-radius: 6px; padding: 8px 18px; cursor: pointer; color: var(--ink); }
+  .bank button.hit { background: var(--green); border-color: var(--green); color: #fff; }
+  .bank button.miss { background: var(--red); border-color: var(--red); color: #fff; }
+  .bank .legend { align-self: center; font-size: 16px; color: var(--muted); margin-left: 8px; }
+  .stagearea { display: grid; place-items: center; padding: 20px 36px; }
+  .card { width: min(1100px, 100%); background: var(--sticky); padding: 48px 56px; transform: rotate(-1deg);
+    box-shadow: 0 18px 30px -12px rgb(27 34 48 / 0.35); }
+  .who { font: 700 18px 'JetBrains Mono', monospace; margin-bottom: 14px; }
+  .q { font: 700 clamp(26px, 3.2vw, 44px)/1.2 'Bricolage Grotesque', sans-serif; letter-spacing: -0.01em; }
+  .q small { display: block; font: 400 clamp(20px, 2vw, 28px)/1.45 'Atkinson Hyperlegible', sans-serif; margin-top: 18px; }
+  code { font: 600 .9em 'JetBrains Mono', monospace; }
+  .a { margin-top: 30px; background: #fff; border-left: 10px solid var(--green); padding: 18px 24px; font-size: clamp(20px, 2vw, 28px); line-height: 1.4; display: none; }
+  .a b { display: block; font: 800 clamp(28px, 3vw, 42px) 'Bricolage Grotesque', sans-serif; color: var(--green); }
+  .card.revealed .a { display: block; }
+  footer { padding: 0 36px 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 500 14px 'JetBrains Mono'; color: var(--muted); }
+  footer button { font: 700 16px 'Atkinson Hyperlegible'; padding: 10px 18px; border-radius: 8px; border: 2px solid var(--ink); background: #fff; cursor: pointer; }
+  footer button.go { background: var(--blue); color: #fff; border-color: var(--blue); }
+  button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Where did it break?</h1>
+  <span class="count" id="count"></span>
+</header>
+<div class="bank" id="bank">
+  <button type="button">Front-end</button><button type="button">API</button><button type="button">Database</button><button type="button">Git</button>
+  <span class="legend">Front-end = components, service layer, .env · API = keys and RLS rules</span>
+</div>
+<div class="stagearea">
+  <div class="card" id="card">
+    <div class="who">The bug report… · type the LAYER in chat on "go", then the fix</div>
+    <div class="q" id="q"></div>
+    <div class="a" id="a"></div>
+  </div>
+</div>
+<footer>
+  <button id="prev">← Back</button><button class="go" id="reveal">Reveal (space)</button><button id="next">Next →</button>
+  <span>← → to move · space to reveal · first 6 cards are the core set</span>
+</footer>
+<script>
+  // [symptom, layer, clue + fix]
+  const Q = [
+    ["Ticked shows: <code>Supabase said 401: Invalid API key</code>", "API",
+      "401 = the API doesn’t accept your key. Check <code>VITE_SUPABASE_ANON_KEY</code> in <code>front-end/.env</code>: the whole publishable key, no quotes, no spaces. Then restart <code>npm run dev</code>."],
+    ["The pages load with no errors, but every list is empty. The Table Editor has rows.", "API",
+      "200 with <code>[]</code> = Row Level Security hid the rows. The dashboard walks past RLS; the publishable key doesn’t. Is there a policy for the anon role?"],
+    ["Saving a task: <code>Supabase said 400: null value in column \"user_id\" violates not-null constraint</code>", "Database",
+      "The database refused the row: <code>tasks.user_id</code> is required. The request body has to include a <code>user_id</code> (our demo user)."],
+    ["You added both values to <code>.env</code>, but <code>import.meta.env.VITE_SUPABASE_URL</code> is <code>undefined</code>.", "Front-end",
+      "Vite reads <code>.env</code> only when it starts, only next to <code>package.json</code> (in <code>front-end/</code>), and only names that start with <code>VITE_</code>. Check all three, then restart the dev server."],
+    ["<code>git status</code> lists <code>front-end/.env</code> as a new file.", "Git",
+      "Stop before you commit! Add <code>.env</code> to <code>.gitignore</code>. If a key was already pushed, rotate it in Supabase (Project Settings → API Keys)."],
+    ["The new task saves (you can see it in the Table Editor), but it only shows in Ticked after you refresh.", "Front-end",
+      "The request worked; the screen didn’t update. After a write, use the returned row or re-load the list. The database is the source of truth."],
+    ["Every request fails with <code>Failed to fetch</code>, and there’s no status code at all.", "Front-end",
+      "No status code = the request never reached Supabase. Usually a wrong <code>VITE_SUPABASE_URL</code>: a typo in the project id, or <code>/rest/v1</code> added twice."],
+    ["<code>Supabase said 404</code> on the Tasks page.", "API",
+      "404 = no such address. Look at the URL in the Network tab: a misspelled table (<code>/taks</code>) or a wrong path."],
+    ["Deleting a project fails: <code>409: update or delete on table \"projects\" violates foreign key constraint</code>", "Database",
+      "The foreign key has no <code>ON DELETE</code> rule, so tasks still point at the project. Our schema says <code>on delete set null</code>. Ask the supabase-agent to check it (with your approval)."],
+    ["A teammate put the Supabase <b>secret</b> key in <code>VITE_SUPABASE_ANON_KEY</code> “because the publishable one returned nothing”.", "Front-end",
+      "Never. Anything named <code>VITE_</code> ships to every browser, and the secret key skips ALL security. Fix the RLS rules instead, and rotate that secret key."],
+  ]
+  let i = 0
+  const $ = (s) => document.querySelector(s)
+  const btns = [...document.querySelectorAll('#bank button')]
+  function draw() {
+    $('#card').classList.remove('revealed')
+    $('#q').innerHTML = Q[i][0]
+    $('#a').innerHTML = `<b>${Q[i][1]}</b>${Q[i][2]}`
+    $('#count').textContent = `${i + 1} / ${Q.length}`
+    btns.forEach((s) => s.className = '')
+  }
+  function reveal(picked) {
+    $('#card').classList.add('revealed')
+    btns.forEach((s) => s.className = s.textContent === Q[i][1] ? 'hit' : (s.textContent === picked ? 'miss' : ''))
+  }
+  btns.forEach((b) => b.onclick = () => reveal(b.textContent))
+  const go = (n) => { i = Math.min(Math.max(n, 0), Q.length - 1); draw() }
+  $('#prev').onclick = () => go(i - 1); $('#next').onclick = () => go(i + 1); $('#reveal').onclick = () => reveal()
+  addEventListener('keydown', (e) => {
+    if (e.key === ' ') { e.preventDefault(); reveal() }
+    if (e.key === 'ArrowRight') go(i + 1)
+    if (e.key === 'ArrowLeft') go(i - 1)
+  })
+  draw()
+</script>
+</body>
+</html>

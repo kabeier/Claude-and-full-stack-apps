@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture 2 · Connecting it All</title>
+<link rel="stylesheet" href="../shared/deck.css">
+</head>
+<body data-minutes="40">
+<div class="stage">
+
+<!-- ============ OPEN (0–2) ============ -->
+<section class="slide title" data-seg="Open" data-at="0">
+  <div class="kicker">Building Applications · Full-Stack Apps · Part 2 of 2</div>
+  <h1>Connecting it all</h1>
+  <p class="sub">Ticked sends the requests Postman sent. Claude's two agents do the wiring; you approve and check.</p>
+  <aside class="notes">
+    <p><b>Before class</b> (demo-kit/RUNBOOK.md): <code>~/demos/ticked</code> still has the old layout (app in the root, <code>supabase/</code> inside). The dev rules from Lecture 1 are in place, and the <b>Demo User</b> row exists. Ticked's dev server is <b>not</b> running. <code>claude mcp list</code> shows context7 and playwright.</p>
+    <p>Tabs: Supabase Table Editor, this deck, the "Where did it break?" page. One terminal in <code>~/demos/ticked</code>. Press <b>T</b>.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Open" data-at="1">
+  <h2>Today</h2>
+  <ol class="steps">
+    <li>One project folder: <code>front-end/</code> + <code>supabase/</code> + one <code>.claude/</code></li>
+    <li>Keep the key secret: <code>.env</code> and <code>.gitignore</code></li>
+    <li>Hand Claude the job: two sub-agents, one orchestrator</li>
+    <li>Review its plan, then watch it build and test</li>
+    <li>Add a task. Refresh. <b>It's still there.</b></li>
+  </ol>
+  <aside class="notes">
+    <p>"Front-end: done. Database: done. API: Supabase's, and we used it by hand last lecture. Today is wiring only: no new tables, no new UI."</p>
+  </aside>
+</section>
+
+<!-- ============ FOLDERS (2–7) ============ -->
+<section class="slide diagram" data-seg="One project" data-at="2">
+  <img src="../diagrams/FS2-02-folders.png" alt="Before: the app in the project root with a supabase folder inside it. After: front-end and supabase folders side by side, one shared .claude folder and the MCP config in the root">
+  <div class="src">diagrams/FS2-02-folders.tldr</div>
+  <aside class="notes">
+    <p>"Right now each half has its own <code>.claude</code>. Claude in the root can't see the supabase-agent, and Claude in <code>supabase/</code> can't see the front-end-agent. One shared <code>.claude</code> in the root gives the main session both agents and every skill."</p>
+    <p>The app moves into <code>front-end/</code>. The Supabase MCP config (<code>.mcp.json</code>) moves to the root, where the main session runs.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="One project" data-at="3">
+  <h2>Live: Claude restructures the project</h2>
+  <pre style="font-size:21px"><span class="c"># terminal: cd ~/demos/ticked  →  claude</span>
+Restructure this project into the full-stack layout below. Move files only: don't change any code.
+
+ticked/
+├── .claude/      skills/ and agents/ from BOTH ./.claude and ./supabase/.claude, merged
+├── .mcp.json     moved up from supabase/
+├── front-end/    everything that belongs to the React app (src, public, app_outline,
+│                 index.html, package files, vite and lint config, .gitignore, node_modules)
+├── supabase/     schema.sql, user_stories.md and the ERD screenshot
+├── CLAUDE.md     update it to describe both halves
+└── README.md
+
+Show me the plan (what moves where) first and wait for my approval.</pre>
+  <p class="bottomline">Then: exit, <code>claude</code> again → <code>/mcp</code> → <code>/agents</code></p>
+  <aside class="notes">
+    <p><b>** LIVE, about 4 minutes. **</b> Paste (it's in <code>demo-kit/prompts.md</code>). Read the plan: is anything left behind? Does <code>node_modules</code> go with the app? Approve; pick "Yes, allow all edits during this session".</p>
+    <p>Then exit Claude and start it again in <code>~/demos/ticked</code>: choose <b>Use this MCP server</b>. <code>/mcp</code>: supabase connected (Authenticate again if it asks). <code>/agents</code>: front-end-agent <b>and</b> supabase-agent.</p>
+    <p>Quick check in a second tab: <code>cd front-end && npm run dev</code>. Ticked still runs, still forgets. Stop it (Ctrl+C).</p>
+    <p><b>Backup:</b> <code>bash ~/fs-kit/restructure.sh ~/demos/ticked</code></p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Secrets" data-at="7">
+  <h2>Live: the key goes in <code>.env</code>, and <code>.env</code> stays off GitHub</h2>
+  <div class="cols">
+    <div>
+      <pre style="font-size:22px"><span class="c"># front-end/.env  (next to package.json)</span>
+VITE_SUPABASE_URL=https://&lt;id&gt;.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_…</pre>
+      <pre style="font-size:22px;margin-top:20px"><span class="c"># .gitignore  (project root)</span>
+.env</pre>
+    </div>
+    <ul class="small">
+      <li>Vite only shares names that start with <code>VITE_</code></li>
+      <li>Code reads them with <code>import.meta.env.VITE_SUPABASE_URL</code></li>
+      <li>Vite reads <code>.env</code> when it starts: restart <code>npm run dev</code></li>
+      <li><b>Publishable</b> key only. The secret key never goes in a <code>VITE_</code> variable.</li>
+    </ul>
+  </div>
+  <p class="bottomline">Check: <code>git status</code> must not list <code>.env</code>.</p>
+  <aside class="notes">
+    <p><b>** LIVE, about 3 minutes. ** You</b> create this file, not Claude: "Secrets are yours to handle." Use the same URL and key as in Postman (no <code>/rest/v1</code>).</p>
+    <p>"Why <code>VITE_</code>? Vite puts these values into the JavaScript it sends to every browser. The prefix is you saying 'yes, this one is OK to share'. That's why the secret key never gets the prefix."</p>
+    <p>"Why hide the publishable key if it's safe to share? Habit, and the curriculum's rule: never commit keys." Add <code>.env</code> to the root <code>.gitignore</code>, run <code>git status</code>: no <code>.env</code> in the list. Commit ("Restructure: front-end + supabase"): it's also the undo point if you need the backup later.</p>
+    <p>Anon key = publishable key: the curriculum's name for the variable comes from Supabase's older key names.</p>
+  </aside>
+</section>
+
+<!-- ============ THE PROMPT (10–19) ============ -->
+<section class="slide" data-seg="Hand it to Claude" data-at="10">
+  <h2>The prompt (Opus)</h2>
+  <pre style="font-size:21px">My current front-end application is working as desired and I want to preserve the existing UI
+and user experience along with my supabase projects database structure. Now I would like to
+integrate these two projects as one (expose API endpoints and connect UI actions within the React
+app to the Supabase project) to create a full stack application.
+
+I want you to use the subagents of front-end-agent and supabase-agent to communicate with one
+another to accomplish this task while using you as their main orchestrator for this task.
+
+Do not change any fundamental functionality and/or data without my approval.
+
+**DO NOT IMPLEMENT AUTHENTICATION NOR AUTHORIZATION PRINCIPLES**
+
+Once the Sub-Agents return a completed action use both the Playwright MCP and the Supabase MCP to
+walk through the applications features yourself and test them out to ensure a successful integration.</pre>
+  <aside class="notes">
+    <p><b>** LIVE. **</b> In Claude (root): <code>/model</code> → Opus. Paste the prompt from <code>demo-kit/prompts.md</code>. It's the curriculum's prompt, word for word.</p>
+    <p>Point at three lines: <b>preserve</b> the UI and schema; <b>sub-agents</b> with Claude as the orchestrator; <b>no auth</b> (that's a future lecture). Then the test step: Claude checks its own work with Playwright (clicks the app) and the Supabase MCP (reads the rows).</p>
+    <p>Claude analyzes first (2–4 minutes). Use that time for the next slide.</p>
+  </aside>
+</section>
+
+<section class="slide diagram" data-seg="Hand it to Claude" data-at="11">
+  <img src="../diagrams/FS2-01-request-flow.png" alt="Save task: component calls the service layer, which sends an HTTP request to the Supabase API, which runs SQL in PostgreSQL; 201 and the new row come back and the screen re-renders. Three rules: components never call the API, handle loading success and error, the database is the source of truth">
+  <div class="src">diagrams/FS2-01-request-flow.tldr</div>
+  <aside class="notes">
+    <p>While Claude reads: "This is the request we sent from Postman, now sent by Ticked." Walk the top row, then the way back.</p>
+    <p>Three rules (the yellow boxes). Ticked already follows them: all data goes through <code>src/data/db.js</code> (the service layer's front door), and <code>TaskContext</code> already shows loading and errors and re-loads after every change. "That's why we built it this way in the SPA lectures: today only the data file should change."</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Review the plan" data-at="14">
+  <h2>Review the plan before you approve</h2>
+  <div class="cols">
+    <div class="card blue">
+      <h3>Look for</h3>
+      <ul class="small">
+        <li>A service layer: one file that knows the URL and key</li>
+        <li>Which files change: mostly the data file</li>
+        <li>Keys from <code>import.meta.env</code></li>
+        <li>No new tables, no login, no RLS changes</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Likely questions</h3>
+      <ul class="small">
+        <li><b>user_id?</b> Use the Demo User from Postman</li>
+        <li><b>Seed data?</b> Remove it: the database is the truth</li>
+        <li><b>supabase-js or fetch?</b> Either, in one service file</li>
+      </ul>
+    </div>
+  </div>
+  <p class="bottomline">Something wrong? Correct it in your reply, before any code changes.</p>
+  <aside class="notes">
+    <p><b>** LIVE, about 4 minutes. **</b> Read the plan out loud and tick the left card. If it plans to touch pages or styles, ask why: the UI is supposed to stay the same.</p>
+    <p>The <code>user_id</code> question is the big one: <code>projects.user_id</code> and <code>tasks.user_id</code> are NOT NULL, and Ticked has no login. Reply text is in <code>demo-kit/prompts.md</code> ("Likely questions").</p>
+    <p>Approve. Pick "Yes, allow all edits during this session" for files. Approve Supabase MCP calls one by one (they should be reads). Then start the activity.</p>
+  </aside>
+</section>
+
+<section class="slide activity" data-seg="Activity: Where did it break?" data-at="18">
+  <h2>Activity: Where did it break?</h2>
+  <div class="countdown" data-sec="300"></div>
+  <ol class="steps">
+    <li>Claude's agents are wiring Ticked</li>
+    <li>Meanwhile: real bug reports from apps like ours</li>
+    <li>In chat on "go": <b>FRONT-END</b>, <b>API</b>, <b>DATABASE</b> or <b>GIT</b></li>
+    <li>Then: what's the fix?</li>
+  </ol>
+  <p class="muted small" style="margin-top:24px">Page: activity-where-did-it-break/</p>
+  <aside class="notes">
+    <p>About 30 seconds a card; the first 6 are the core set. Glance at the terminal between cards and approve anything Claude asks.</p>
+    <p>Answers are on the page (space to reveal) and in your Notes ("Full-Stack Lectures - Teacher Guide").</p>
+    <p>When Claude starts testing with Playwright, stop the activity: that's the next slide.</p>
+  </aside>
+</section>
+
+<!-- ============ VERIFY (24–34) ============ -->
+<section class="slide" data-seg="Verify" data-at="24">
+  <h2>Watch Claude test its own work</h2>
+  <div class="cols">
+    <div class="card blue">
+      <h3>Playwright MCP</h3>
+      <p class="small">Opens Ticked, adds a project and a task, ticks it, deletes it. Like a user would.</p>
+    </div>
+    <div class="card green">
+      <h3>Supabase MCP</h3>
+      <p class="small">Reads the tables after each step: did the row really change?</p>
+    </div>
+  </div>
+  <p class="bottomline">Then read its summary, especially the <b>assumptions</b>.</p>
+  <aside class="notes">
+    <p><b>** LIVE. **</b> Approve the Playwright and Supabase calls. Point at the browser window Playwright opens.</p>
+    <p>Read the final summary out loud: every changed file and every assumption. "Assumptions are decisions Claude made for you. Do you agree with each one?" Typical ones: the demo user, removed seed data, the service file's name.</p>
+    <p><b>Time check:</b> if it's past ~28 min and Claude is still building, stop it and use the backup (<code>demo-kit/backup-ticked-fullstack</code>; see the RUNBOOK).</p>
+  </aside>
+</section>
+
+<section class="slide diagram" data-seg="Verify" data-at="28">
+  <img src="../diagrams/FS2-03-connected.png" alt="Front-end, API and database all ticked and connected; still missing: logins, a future lecture">
+  <div class="src">diagrams/FS2-03-connected.tldr</div>
+  <aside class="notes">
+    <p><b>** LIVE, the payoff (about 4 minutes). **</b> <code>cd front-end && npm run dev</code>. Add a task. <b>Refresh. It's still there.</b> Let that land.</p>
+    <ul>
+      <li>Supabase Table Editor → tasks: there's the row, with the Demo User's <code>user_id</code>.</li>
+      <li>Insert a task in the Table Editor, refresh Ticked: it shows up. "The database is the source of truth."</li>
+      <li>DevTools → Network: click a request. Same URL, headers and JSON as Postman.</li>
+      <li>Open the service file Claude wrote. Find the <code>import.meta.env</code> lines.</li>
+    </ul>
+    <p>"What's still missing? Logins: everyone shares one demo user. That's the authentication lecture."</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Wrap up" data-at="32">
+  <h2>Delegate the typing, not the responsibility</h2>
+  <ul class="small">
+    <li>You approved the folder move, the plan and every MCP call</li>
+    <li>You kept the key in <code>.env</code> and <code>.env</code> out of git</li>
+    <li>Claude tested; <b>you</b> refreshed and checked the Table Editor</li>
+    <li>Commit now: <code>git status</code> (no <code>.env</code>!), then commit and push</li>
+  </ul>
+  <p class="bottomline">Ticked is a full-stack app: React → service layer → Supabase API → PostgreSQL.</p>
+  <aside class="notes">
+    <p><b>** LIVE, 1 minute: **</b> <code>git status</code>, point out <code>.env</code> isn't there, commit "Connect Ticked to Supabase".</p>
+    <p>Recap the flow from the diagram. The dev rules are temporary: logins and per-user rules come in the authentication lecture.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Wrap up" data-at="35">
+  <h2>Homework, Part II</h2>
+  <div class="cols">
+    <ol style="list-style:none;padding-left:0" class="small">
+      <li><b>Priority 1, Netflix Clone III:</b> make it full-stack</li>
+      <li><b>Priority 2, your own app:</b> give it memory. Same steps as today.</li>
+      <li><b>Priority 3, FreeCodeCamp:</b> 100 steps of the JavaScript certification</li>
+    </ol>
+    <div class="card green">
+      <h3>The steps</h3>
+      <ul class="small">
+        <li>Restructure: <code>front-end/</code> + <code>supabase/</code> + one <code>.claude</code></li>
+        <li><code>.env</code> + <code>.gitignore</code></li>
+        <li>The prompt, then review the plan</li>
+        <li>Add, refresh, still there? Commit.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>All steps and prompts are on the class site. Remind them: one user row must exist before the app can save (no logins yet), and the dev rules from Part I must be in place.</p>
+  </aside>
+</section>
+
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Full-Stack Apps</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f4f6f9; --grid:#dce3ee; --ink:#1b2230; --muted:#5b6577; --blue:#2552c9; --green:#13795b; --sticky:#ffe76a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: var(--ink); font-size: 18px; line-height: 1.5;
+    background: var(--paper) linear-gradient(var(--grid) 1px, transparent 1px) -1px -1px / 40px 40px,
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px) -1px -1px / 40px 40px; }
+  main { max-width: 1120px; margin: 0 auto; padding: 64px 28px 80px; }
+  h1 { font: 800 clamp(44px, 7vw, 80px)/0.95 'Bricolage Grotesque', sans-serif; letter-spacing: -0.03em; margin: 0 0 16px; }
+  .lede { max-width: 60ch; color: var(--muted); font-size: 20px; margin: 0 0 48px; }
+  .lectures { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; }
+  section { background: #fff; border: 2px solid var(--ink); border-radius: 4px; padding: 28px; }
+  .num { font: 800 64px/1 'Bricolage Grotesque', sans-serif; color: var(--blue); }
+  h2 { font: 800 30px/1.1 'Bricolage Grotesque', sans-serif; margin: 8px 0 6px; letter-spacing: -0.01em; }
+  section > p { margin: 0 0 22px; color: var(--muted); }
+  a.slides { display: block; background: var(--sticky); color: var(--ink); text-decoration: none; padding: 20px 22px; margin-bottom: 18px;
+    transform: rotate(-0.8deg); box-shadow: 0 10px 18px -10px rgb(27 34 48 / 0.45); transition: transform .15s; }
+  a.slides:hover, a.slides:focus-visible { transform: rotate(0deg) translateY(-2px); }
+  a.slides b { display: block; font: 800 26px 'Bricolage Grotesque', sans-serif; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  ol a { display: block; padding: 14px 16px; border: 2px solid var(--grid); border-radius: 4px; color: var(--ink); text-decoration: none; }
+  ol a:hover, ol a:focus-visible { border-color: var(--blue); }
+  ol a b { color: var(--blue); }
+  ol a span { display: block; color: var(--muted); font-size: 16px; }
+  h3 { font: 800 26px 'Bricolage Grotesque', sans-serif; margin: 56px 0 14px; }
+  .kit { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .kit a { background: #fff; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .gallery figure { margin: 0; background: #fff; border: 2px solid var(--grid); border-radius: 4px; padding: 8px; }
+  .gallery img { width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top; display: block; }
+  .gallery figcaption { font-size: 15px; padding: 6px 2px 0; display: flex; justify-content: space-between; gap: 8px; }
+  .gallery figcaption a { color: var(--blue); }
+  .install { margin-bottom: 20px; }
+  .install h4 { font: 800 21px 'Bricolage Grotesque', sans-serif; margin: 28px 0 6px; }
+  .install h4:first-child { margin-top: 0; }
+  .install .steps { display: block; list-style: decimal; padding-left: 1.4em; margin: 0 0 14px; }
+  .install .steps li::marker { font-weight: 700; color: var(--blue); } .install .steps li { margin-bottom: 12px; }
+  .install code { font-size: 0.9em; background: #e8ecf3; padding: 1px 5px; border-radius: 3px; }
+  .cmdwrap { position: relative; margin: 8px 0 6px; }
+  pre.cmd { background: var(--ink); color: #fff; padding: 16px 18px; padding-right: 90px; border-radius: 4px; overflow-x: auto; margin: 0; font-size: 15px; }
+  pre.cmd code { background: none; padding: 0; }
+  .copy { position: absolute; top: 10px; right: 10px; font: 700 14px 'Atkinson Hyperlegible'; padding: 6px 12px; border-radius: 4px; border: 0; background: var(--sticky); color: var(--ink); cursor: pointer; }
+  .fail { margin: 0 0 8px; padding: 14px 18px; background: var(--sticky); transform: rotate(-0.4deg); }
+  .install .steps a, details a { display: inline; padding: 0; border: 0; color: var(--blue); text-decoration: underline; }
+  details { margin: 6px 0 14px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--blue); }
+  footer { margin-top: 56px; color: var(--muted); font-size: 16px; }
+  a:focus-visible, summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { a.slides { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Full-Stack Apps</h1>
+  <p class="lede">Send requests to your database's API by hand, then let Claude Code connect your React app to it, so your app finally remembers. Everything opens in a new tab, so keep this page open as your home base.</p>
+
+  <div class="lectures">
+    <section>
+      <div class="num">1</div>
+      <h2>RESTful APIs</h2>
+      <p>What an API is, CRUD requests, status codes, and Postman against our real Supabase database.</p>
+      <a class="slides" href="lecture-1-restful-apis/slides.html" target="_blank" rel="noopener"><b>Open the slides</b>Arrow keys to move, F for fullscreen</a>
+      <ol>
+        <li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener"><b>Postman</b><span>Free account. The desktop app or the web version both work.</span></a></li>
+        <li><a href="demo-kit/Ticked-API.postman_collection.json" download><b>Ticked API collection</b><span>The class requests. Postman → Import, then set its two variables.</span></a></li>
+      </ol>
+    </section>
+    <section>
+      <div class="num">2</div>
+      <h2>Connecting it All</h2>
+      <p>One project folder, a secret <code>.env</code>, and two Claude sub-agents wiring Ticked to Supabase.</p>
+      <a class="slides" href="lecture-2-connecting-it-all/slides.html" target="_blank" rel="noopener"><b>Open the slides</b>Arrow keys to move, F for fullscreen</a>
+      <ol>
+        <li><a href="lecture-2-connecting-it-all/activity-where-did-it-break/" target="_blank" rel="noopener"><b>Activity: Where Did It Break?</b><span>Bug reports from full-stack apps. Front-end, API, database or git?</span></a></li>
+        <li><a href="https://github.com/kabeier/Full-Stack-Apps/tree/main/demo-kit/backup-ticked-fullstack" target="_blank" rel="noopener"><b>Ticked, full-stack</b><span>The connected app: see what changed in the two data files.</span></a></li>
+      </ol>
+    </section>
+  </div>
+
+  <h3>Homework Part I: send requests to your API</h3>
+  <section class="install">
+    <h4>1 · Find your API's address and key</h4>
+    <ol class="steps">
+      <li>In your Supabase project: <b>Integrations → Data API</b>. Copy the <b>Project URL</b> (without <code>/rest/v1</code>). The <b>Docs</b> link there explains every endpoint for your tables.</li>
+      <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b>. Never use the secret key in Postman or in front-end code.</li>
+    </ol>
+
+    <h4>2 · Let the publishable key in (temporary)</h4>
+    <ol class="steps">
+      <li>Send <code>GET {{base_url}}/rest/v1/&lt;a table&gt;</code>. If you get <code>[]</code> but the Table Editor has rows, Row Level Security is on with no rules.</li>
+      <li>In your <code>supabase</code> folder, start <code>claude</code> and paste this (change the table names to yours):
+        <div class="cmdwrap"><pre class="cmd" style="white-space:pre-wrap"><code>My tables have Row Level Security on with no policies, so my publishable key gets [] back in Postman and can't add rows. We don't have logins yet.
+
+Using the Supabase MCP, add TEMPORARY development policies that let the anon role read and write all my tables (LIST YOUR TABLES). Name each one "dev: open access until auth". Show me the SQL first and wait for my approval.</code></pre><button type="button" class="copy">Copy</button></div></li>
+      <li>Read the SQL before you approve. These rules are for development only; real per-user rules come with logins in a future lecture.</li>
+    </ol>
+
+    <h4>3 · Send every CRUD request in Postman</h4>
+    <ol class="steps">
+      <li>New collection → <b>Variables</b>: <code>base_url</code> and <code>publishable_key</code>. Click <b>Save</b>.</li>
+      <li>New request → <b>Headers → Bulk Edit</b> → paste, then <b>Duplicate</b> this request for every new one:
+        <div class="cmdwrap"><pre class="cmd"><code>apikey:{{publishable_key}}
+Authorization:Bearer {{publishable_key}}
+Content-Type:application/json</code></pre><button type="button" class="copy">Copy</button></div></li>
+      <li>For each table: <b>POST</b> a row (add the header <code>Prefer:return=representation</code> to get the new row back), <b>GET</b> all rows, <b>GET</b> with a filter (<code>?column=eq.value</code>), <b>PATCH</b> one row (<code>?id=eq.&lt;id&gt;</code>), <b>DELETE</b> one row. Always filter a PATCH and a DELETE.</li>
+      <li>After each one, note the <b>status code</b>, the <b>response body</b>, and what changed in the <b>Table Editor</b>.</li>
+      <li>If your tables have a <code>user_id</code>, <b>keep one user row</b>: your app uses it in Part II, until we add logins.</li>
+    </ol>
+
+    <h4>4 · Write your notes for Claude</h4>
+    <ol class="steps">
+      <li>Make <code>supabase/api_notes.md</code>: one example request per table that worked, plus anything tricky (required columns, foreign keys, filters your app needs, errors you hit).</li>
+      <li>This is context for Claude in Part II. If you can explain your API, you can check Claude's work.</li>
+    </ol>
+  </section>
+
+  <h3>Homework Part II: make it full-stack</h3>
+  <section class="install">
+    <h4>5 · One project folder</h4>
+    <ol class="steps">
+      <li>Commit first (<code>git add -A && git commit -m "Before full-stack"</code>), so you can undo anything.</li>
+      <li>In your project's root (the folder that has <code>supabase/</code> inside it), start <code>claude</code> and paste:
+        <div class="cmdwrap"><pre class="cmd" style="white-space:pre-wrap"><code>Restructure this project into the full-stack layout below. Move files only: don't change any code.
+
+my-app/
+├── .claude/      skills/ and agents/ from BOTH ./.claude and ./supabase/.claude, merged
+├── .mcp.json     moved up from supabase/
+├── front-end/    everything that belongs to the React app (src, public, app_outline, index.html, package files, vite and lint config, .gitignore, node_modules)
+├── supabase/     my database files (schema.sql, user_stories.md, ERD screenshot, api_notes.md)
+├── CLAUDE.md     update it to describe both halves
+└── README.md
+
+Show me the plan (what moves where) first and wait for my approval.</code></pre><button type="button" class="copy">Copy</button></div></li>
+      <li>Exit Claude, start it again in the root, choose <b>Use this MCP server</b>. Check <code>/mcp</code> (supabase connected) and <code>/agents</code> (front-end-agent and supabase-agent).</li>
+    </ol>
+    <details>
+      <summary>No supabase-agent in /agents?</summary>
+      <div class="cmdwrap"><pre class="cmd"><code>mkdir -p .claude/agents && curl -fsSL https://raw.githubusercontent.com/kabeier/Databases-and-Supabase/main/demo-kit/.claude/agents/supabase-agent.md -o .claude/agents/supabase-agent.md</code></pre><button type="button" class="copy">Copy</button></div>
+    </details>
+
+    <h4>6 · Keep the key secret</h4>
+    <ol class="steps">
+      <li>Make <code>front-end/.env</code> (next to <code>package.json</code>) with your values, no quotes:
+        <div class="cmdwrap"><pre class="cmd"><code>VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-publishable-key</code></pre><button type="button" class="copy">Copy</button></div></li>
+      <li>Add a line with <code>.env</code> to the <code>.gitignore</code> in your project root (make the file if it isn't there). Run <code>git status</code>: <code>.env</code> must <b>not</b> be listed.</li>
+    </ol>
+
+    <h4>7 · Hand it to Claude, then review the plan</h4>
+    <ol class="steps">
+      <li>In Claude (project root), type <code>/model</code> and pick <b>Opus</b>. Paste the prompt:
+        <div class="cmdwrap"><pre class="cmd" style="white-space:pre-wrap"><code>My current front-end application is working as desired and I want to preserve the existing UI and user experience along with my supabase projects database structure. Now I would like to integrate these two projects as one (expose API endpoints and connect UI actions within the React app to the Supabase project) to create a full stack application.
+
+I want you to use the subagents of front-end-agent and supabase-agent to communicate with one another to accomplish this task while using you as their main orchestrator for this task.
+
+Do not change any fundamental functionality and/or data without my approval.
+
+**DO NOT IMPLEMENT AUTHENTICATION NOR AUTHORIZATION PRINCIPLES**
+
+Once the Sub-Agents return a completed action use both the Playwright MCP and the Supabase MCP to walk through the applications features yourself and test them out to ensure a successful integration.</code></pre><button type="button" class="copy">Copy</button></div></li>
+      <li>Read the plan before you approve: one service file for all Supabase requests, keys from <code>import.meta.env</code>, no new tables, no login, no RLS changes. You can point Claude at <code>@supabase/api_notes.md</code>.</li>
+      <li>Asked about <code>user_id</code>? "Use the one user in my users table for every new row. No login yet." Asked about the old fake data? "Remove it. The database is the source of truth."</li>
+    </ol>
+
+    <h4>8 · Prove it, then commit</h4>
+    <ol class="steps">
+      <li><code>cd front-end && npm run dev</code>. Add something. <b>Refresh. Still there?</b> Find the row in the Table Editor.</li>
+      <li>Add a row in the Table Editor, refresh your app: it should show up.</li>
+      <li>Read Claude's summary, especially its <b>assumptions</b>. Then <code>git status</code> (no <code>.env</code>!), commit and push.</li>
+    </ol>
+  </section>
+
+  <ol class="kit">
+    <li><a href="https://github.com/kabeier/Full-Stack-Apps/blob/main/demo-kit/prompts.md" target="_blank" rel="noopener"><b>All the prompts</b><span>Dev rules, restructure, connect, and good answers to Claude's questions.</span></a></li>
+    <li><a href="https://github.com/kabeier/Full-Stack-Apps/blob/main/demo-kit/backup-ticked-fullstack/front-end/src/services/supabaseApi.js" target="_blank" rel="noopener"><b>supabaseApi.js</b><span>Ticked's service layer: the same requests as Postman, in code.</span></a></li>
+    <li><a href="https://github.com/kabeier/Full-Stack-Apps/blob/main/demo-kit/backup-ticked-fullstack/front-end/src/data/db.js" target="_blank" rel="noopener"><b>db.js</b><span>Ticked's data functions, now calling the API instead of arrays.</span></a></li>
+    <li><a href="https://github.com/kabeier/Full-Stack-Apps/blob/main/demo-kit/dev-policies.sql" target="_blank" rel="noopener"><b>dev-policies.sql</b><span>The temporary RLS rules, as SQL.</span></a></li>
+  </ol>
+
+  <h3>Diagrams</h3>
+  <div class="gallery" id="gallery"></div>
+
+  <footer>Want to edit a diagram? Download its .tldr file and drag it onto <a href="https://www.tldraw.com" target="_blank" rel="noopener">tldraw.com</a>. Earlier lectures: <a href="https://kabeier.github.io/SPAs-and-Claude/" target="_blank" rel="noopener">SPAs and Claude</a> · <a href="https://kabeier.github.io/Databases-and-Supabase/" target="_blank" rel="noopener">Databases and Supabase</a>.</footer>
+</main>
+<script>
+  document.querySelectorAll('.copy').forEach((b) => b.onclick = async () => {
+    await navigator.clipboard.writeText(b.previousElementSibling.innerText.trim()); b.textContent = 'Copied'; setTimeout(() => (b.textContent = 'Copy'), 1500)
+  })
+  const DIAGRAMS = [
+    ['FS1-01-the-api', 'The API is the kitchen'], ['FS1-02-anatomy', 'Anatomy of a request'],
+    ['FS1-03-rls', 'Why did we get [ ] back?'], ['FS2-02-folders', 'One project, two halves'],
+    ['FS2-01-request-flow', 'One click, down and back'], ['FS2-03-connected', 'Connected'],
+  ]
+  document.getElementById('gallery').innerHTML = DIAGRAMS.map(([f, t]) => `
+    <figure><a href="diagrams/${f}.png" target="_blank" rel="noopener"><img src="diagrams/${f}.png" alt="${t}" loading="lazy"></a>
+    <figcaption>${t}<a href="diagrams/${f}.tldr" download>.tldr</a></figcaption></figure>`).join('')
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture 1 · RESTful APIs</title>
+<link rel="stylesheet" href="../shared/deck.css">
+</head>
+<body data-minutes="40">
+<div class="stage">
+
+<!-- ============ OPEN (0–2) ============ -->
+<section class="slide title" data-seg="Open" data-at="0">
+  <div class="kicker">Building Applications · Full-Stack Apps · Part 1 of 2</div>
+  <h1>RESTful APIs</h1>
+  <p class="sub">The bridge between Ticked and its database. Today we cross it by hand, with Postman.</p>
+  <aside class="notes">
+    <p><b>Before class</b> (demo-kit/RUNBOOK.md): <code>~/demos/ticked</code> is as the database lecture left it (app + <code>supabase/</code>). The <code>task-manager</code> Supabase project has its 5 tables, RLS on, <b>no policies, no rows</b>. Postman open and signed in. Tabs: Supabase dashboard, Postman, this deck.</p>
+    <p>Press <b>T</b> to start the clock. Target: 40 minutes.</p>
+  </aside>
+</section>
+
+<section class="slide diagram" data-seg="Open" data-at="1">
+  <img src="../diagrams/DB2-04-missing-api.png" alt="Ticked (front-end) and the Supabase database are both ready, but the API between them is a dashed box">
+  <div class="src">from the database lecture</div>
+  <aside class="notes">
+    <p>"Last time we ended here. Front-end ✓, database ✓, and a dashed box in the middle. Today we learn what's in that box and use it by hand. Next lecture, Ticked uses it."</p>
+    <p>Today: what an API is, the 4 CRUD requests, then live in Postman against our real database.</p>
+  </aside>
+</section>
+
+<!-- ============ WHAT IS AN API (2–10) ============ -->
+<section class="slide diagram" data-seg="What is an API?" data-at="2">
+  <img src="../diagrams/FS1-01-the-api.png" alt="Restaurant: the front-end dining room sends a request to the API kitchen, which talks SQL to the database storage room and sends back a response">
+  <div class="src">diagrams/FS1-01-the-api.tldr</div>
+  <aside class="notes">
+    <p>Same restaurant as before. The <b>API</b> is the kitchen: it takes an order (a <b>request</b>), checks it against the rules, gets what it needs from storage, and sends back a <b>response</b>.</p>
+    <p>Why not let the browser talk to the database directly? Point at the yellow box: security, consistency, control.</p>
+    <p>Point at the orange box: "Who builds the kitchen? For us, Supabase already did. It's called PostgREST: every table we made got its own web address. So today we don't build an API, we <b>use</b> one."</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="What is an API?" data-at="4">
+  <h2>REST: four habits of a well-behaved API</h2>
+  <div class="grid2x4">
+    <div class="card"><b>1 · URLs name things</b><p>Plural nouns: <code>/users</code>, <code>/tasks</code>. Not verbs like <code>/getTasks</code>.</p></div>
+    <div class="card"><b>2 · Methods say what to do</b><p>GET, POST, PATCH, PUT, DELETE.</p></div>
+    <div class="card"><b>3 · JSON goes back and forth</b><p>Looks like a JavaScript object.</p></div>
+    <div class="card"><b>4 · Stateless</b><p>The server remembers nothing. Every request carries everything it needs, like the key.</p></div>
+  </div>
+  <p class="bottomline">API = how two programs talk. REST = a set of conventions for doing it over HTTP.</p>
+  <aside class="notes">
+    <p>REST is <b>Representational State Transfer</b>. It's a set of conventions, not a library. An API that follows them is "RESTful".</p>
+    <p>Stateless matters today: that's why every Postman request will carry the key in its headers.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="What is an API?" data-at="6">
+  <h2>CRUD: four things every app does to data</h2>
+  <table class="dbt">
+    <tr><th></th><th>HTTP method</th><th>SQL</th><th>Body?</th><th>Success</th></tr>
+    <tr><td><b>C</b>reate</td><td class="pk">POST</td><td>INSERT</td><td>yes, JSON</td><td>201 Created</td></tr>
+    <tr><td><b>R</b>ead</td><td class="pk">GET</td><td>SELECT</td><td>no: filters go in the URL</td><td>200 OK</td></tr>
+    <tr><td><b>U</b>pdate</td><td class="pk">PATCH / PUT</td><td>UPDATE</td><td>yes, JSON</td><td>204 No Content</td></tr>
+    <tr><td><b>D</b>elete</td><td class="pk">DELETE</td><td>DELETE</td><td>no: the URL says which</td><td>204 No Content</td></tr>
+  </table>
+  <div class="cols" style="margin-top:28px">
+    <p class="small"><b>PATCH</b> changes only the fields you send. <b>PUT</b> replaces the whole row. If in doubt, PATCH.</p>
+    <p class="small"><b>DELETE</b> without a filter could empty the table. Always say which row.</p>
+  </div>
+  <aside class="notes">
+    <p>Read across each row: "Create is a POST, which is an INSERT in SQL, it needs a body, and a good answer is 201."</p>
+    <p>PUT vs PATCH: "PUT a task with only a title, and the other columns get wiped or reset. PATCH just the title, and the rest stays." PUT is for "the user edited every field in a form."</p>
+    <p>Supabase has protection against an unfiltered DELETE, but don't rely on it.</p>
+  </aside>
+</section>
+
+<section class="slide activity" data-seg="Quick-fire" data-at="8">
+  <h2>Quick-fire: what request does Ticked need?</h2>
+  <div class="countdown" data-sec="180"></div>
+  <ol class="steps">
+    <li>Open the Tasks page</li>
+    <li>Tick off "Buy groceries"</li>
+    <li>Create a project called "School"</li>
+    <li>Show only the tasks that aren't done</li>
+    <li>Delete one task</li>
+  </ol>
+  <p class="muted small" style="margin-top:12px">In chat: the <b>method</b> and the <b>URL</b>. Bonus: does it need a body?</p>
+  <aside class="notes">
+    <p>The only activity today, about 3 minutes. Read each one, wait 10 seconds for chat, give the answer:</p>
+    <ol>
+      <li><code>GET /tasks</code> (no body)</li>
+      <li><code>PATCH /tasks?id=eq.&lt;id&gt;</code>, body <code>{ "is_complete": true }</code></li>
+      <li><code>POST /projects</code>, body <code>{ "name": "School", "user_id": "…" }</code></li>
+      <li><code>GET /tasks?is_complete=eq.false</code> (the filter is in the URL)</li>
+      <li><code>DELETE /tasks?id=eq.&lt;id&gt;</code> (no body, the URL says which)</li>
+    </ol>
+    <p>Point out the Supabase filter style: <code>column=eq.value</code>. <code>eq</code> means equals.</p>
+  </aside>
+</section>
+
+<section class="slide diagram" data-seg="Supabase's API" data-at="11">
+  <img src="../diagrams/FS1-02-anatomy.png" alt="A request: method, URL (project, /rest/v1/, table, filter), headers (apikey, Authorization, Content-Type) and body; a response: status code and JSON body">
+  <div class="src">diagrams/FS1-02-anatomy.tldr</div>
+  <aside class="notes">
+    <p>Walk it left to right: method, then the URL in four parts. Then the three headers Supabase wants on every request, and the body for writes.</p>
+    <p>The <b>publishable key</b> is safe in a browser: it can only do what the RLS rules allow. The <b>secret</b> key skips all rules: never in Postman screenshots, never in front-end code.</p>
+    <p>Response: a status code (the first clue when debugging) and a JSON body.</p>
+  </aside>
+</section>
+
+<!-- ============ LIVE: POSTMAN (13–31) ============ -->
+<section class="slide" data-seg="Live: Postman" data-at="13">
+  <h2>Live: set up Postman</h2>
+  <div class="cols wide-left">
+    <ol class="small">
+      <li>Supabase → <b>Integrations → Data API</b>: copy the <b>Project URL</b></li>
+      <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b></li>
+      <li>Postman → new collection <b>Ticked API</b> → <b>Variables</b>: <code>base_url</code>, <code>publishable_key</code></li>
+      <li>New request → <b>Headers → Bulk Edit</b> → paste →</li>
+    </ol>
+    <pre style="font-size:22px">apikey:{{publishable_key}}
+Authorization:Bearer {{publishable_key}}
+Content-Type:application/json</pre>
+  </div>
+  <p class="bottomline">URL: <code>{{base_url}}/rest/v1/users</code> → <b>Send</b></p>
+  <aside class="notes">
+    <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the URL <b>without</b> <code>/rest/v1</code> into <code>base_url</code> (the request adds it).</p>
+    <p>Variables: "Don't paste the key into every request. Save it once." Hit <b>Save</b> on the variables or Postman won't use them.</p>
+    <p>Bulk Edit takes all three headers at once. Then <b>Save</b> the request as "Read users". Every new request: <b>Duplicate</b> this one, so the headers come along.</p>
+    <p>Menu names move between Supabase releases. The <b>Connect</b> button in the top bar also shows the URL and key.</p>
+  </aside>
+</section>
+
+<section class="slide diagram" data-seg="Live: Postman" data-at="17">
+  <img src="../diagrams/FS1-03-rls.png" alt="The publishable key is the anon role; the RLS lock checks for a rule; with no rules GET returns an empty list and POST returns 401; a temporary dev rule lets anon in; the dashboard and Claude walk past the lock">
+  <div class="src">diagrams/FS1-03-rls.tldr</div>
+  <aside class="notes">
+    <p><b>** LIVE first: **</b> Send <code>GET /users</code>. It says <b>200</b> and <code>[]</code>. Duplicate it, make it <code>POST /users</code> with body <code>{ "name": "Demo User", "email": "demo@ticked.app" }</code>. It says <b>401</b>: "new row violates row-level security policy".</p>
+    <p>"200 but empty, and 401 even though the key is right. Read the message, not just the number." Then show this diagram.</p>
+    <p>"In the database lecture we turned Row Level Security on and wrote no rules. The publishable key is the <b>anon</b> role, and anon has no rule, so the lock stays shut. The dashboard and Claude's MCP act as the owner: that's why they saw everything."</p>
+    <p>"We have no logins yet, so we add a temporary rule: anon may do everything. In the authentication lecture it becomes 'only your own rows'."</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Live: Postman" data-at="20">
+  <h2>Live: Claude adds a temporary rule</h2>
+  <pre style="font-size:23px"><span class="c"># terminal: Claude in ~/demos/ticked/supabase (the Supabase MCP lives there)</span>
+My tables have Row Level Security on with no policies, so my publishable key gets [] back
+in Postman and can't add rows. We don't have logins yet.
+
+Using the Supabase MCP, add TEMPORARY development policies that let the anon role read and
+write all five tables (users, projects, tasks, tags, task_tags). Name each one
+"dev: open access until auth". Show me the SQL first and wait for my approval.</pre>
+  <p class="bottomline">Read the SQL before you approve. Then check: Authentication → Policies.</p>
+  <aside class="notes">
+    <p><b>** LIVE, about 3 minutes. **</b> <code>cd ~/demos/ticked/supabase && claude</code>. Paste the prompt (it's in <code>demo-kit/prompts.md</code>). Claude shows SQL like <code>create policy "dev: open access until auth" on public.tasks for all to anon using (true) with check (true);</code></p>
+    <p>Read one line out loud: "for all = select, insert, update, delete. to anon = the publishable key. using (true) = every row." Approve the MCP call.</p>
+    <p>Dashboard: <b>Authentication → Policies</b> shows one rule per table (on some versions it's under <b>Database → Policies</b>).</p>
+    <p><b>Backup:</b> paste <code>demo-kit/dev-policies.sql</code> into the SQL Editor and Run.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Live: Postman" data-at="23">
+  <h2>Live: CRUD on our real database</h2>
+  <table class="dbt small">
+    <tr><th>Request</th><th>URL after <code>{{base_url}}/rest/v1/</code></th><th>Body</th><th>Expect</th></tr>
+    <tr><td class="pk">POST</td><td><code>users</code> + header <code>Prefer:return=representation</code></td><td><code>{"name":"Demo User","email":"demo@ticked.app"}</code></td><td>201 + the row</td></tr>
+    <tr><td class="pk">POST</td><td><code>tasks</code> (same Prefer header)</td><td><code>{"title":"Finish the API lecture","user_id":"…"}</code></td><td>201 + the row</td></tr>
+    <tr><td class="pk">GET</td><td><code>tasks?is_complete=eq.false</code></td><td>none</td><td>200 + [ … ]</td></tr>
+    <tr><td class="pk">PATCH</td><td><code>tasks?id=eq.&lt;task id&gt;</code></td><td><code>{"is_complete":true}</code></td><td>204</td></tr>
+    <tr><td class="pk">DELETE</td><td><code>tasks?id=eq.&lt;task id&gt;</code></td><td>none</td><td>204</td></tr>
+  </table>
+  <p class="bottomline">After each one: the status code, the body, and the Table Editor.</p>
+  <aside class="notes">
+    <p><b>** LIVE, about 8 minutes. ** Keep the Table Editor open in a second window</b> and refresh it after each request: "Postman changed a real row."</p>
+    <ul>
+      <li><b>POST users</b>: without <code>Prefer:return=representation</code> you get 201 and an empty body. Add the header to see the new row and its <code>id</code>. Copy the id. <b>Keep this user:</b> next lecture, Ticked uses it as its demo user.</li>
+      <li><b>POST tasks</b>: paste the user's id as <code>user_id</code>. Ask: "What happens without user_id?" Try it: <b>400</b>, not-null. Copy the task's id.</li>
+      <li><b>GET</b> with the filter. Then <b>PATCH</b>: 204, nothing to send back. GET again: is_complete is true.</li>
+      <li><b>DELETE</b> the task: 204. Leave the user.</li>
+    </ul>
+    <p>Short on time? Do POST users, POST tasks, PATCH, and go to status codes.</p>
+    <p><b>Backup:</b> import <code>demo-kit/Ticked-API.postman_collection.json</code> (File → Import) and set its two variables.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Status codes" data-at="31">
+  <h2>Status codes: your first clue</h2>
+  <table class="dbt small">
+    <tr><th>Code</th><th>Means</th><th>We saw it when…</th></tr>
+    <tr><td>200 OK</td><td>worked, here's data</td><td>GET (even <code>[]</code>)</td></tr>
+    <tr><td>201 Created</td><td>new row made</td><td>POST</td></tr>
+    <tr><td>204 No Content</td><td>worked, nothing to send</td><td>PATCH, DELETE</td></tr>
+    <tr><td>400 Bad Request</td><td>your request is wrong</td><td>missing <code>user_id</code>, bad JSON</td></tr>
+    <tr><td class="pk">401 Unauthorized</td><td class="pk">not allowed</td><td class="pk">bad key, or RLS with the publishable key</td></tr>
+    <tr><td>403 Forbidden</td><td>logged in, still not allowed</td><td>RLS, once we have logins</td></tr>
+    <tr><td>404 Not Found</td><td>no such address</td><td>try <code>/taks</code></td></tr>
+    <tr><td>500 Server Error</td><td>the server broke</td><td>not your request: check the logs</td></tr>
+  </table>
+  <aside class="notes">
+    <p><b>** LIVE, 1 minute: **</b> break two things on purpose. Change one letter of the key: <b>401</b> "Invalid API key". Change the URL to <code>/taks</code>: <b>404</b>.</p>
+    <p>2xx = it worked. 4xx = your request has a problem. 5xx = the server has a problem.</p>
+    <p>401 vs 403: with the publishable key and no login, Supabase says 401 when RLS refuses. After the authentication lecture, a logged-in user who breaks a rule gets 403.</p>
+  </aside>
+</section>
+
+<!-- ============ WRAP (35–40) ============ -->
+<section class="slide statement" data-seg="Wrap up" data-at="35">
+  <h2>Today Postman sent the requests. Next, Ticked does.</h2>
+  <p>Same URLs, same headers, same JSON. We move them into a service layer, and Ticked finally remembers.</p>
+  <aside class="notes">
+    <p>Recap: the API is the bridge. CRUD = POST, GET, PATCH/PUT, DELETE. The status code is the first clue. RLS decides what the publishable key may see.</p>
+  </aside>
+</section>
+
+<section class="slide" data-seg="Wrap up" data-at="37">
+  <h2>Homework, Part I</h2>
+  <div class="cols">
+    <ol style="list-style:none;padding-left:0" class="small">
+      <li><b>Priority 1, Send Requests:</b> every CRUD request in Postman, against your Netflix Clone's database first, then your own app's.</li>
+      <li><b>Priority 2, FreeCodeCamp:</b> 50 steps of the Python certification</li>
+    </ol>
+    <div class="card green">
+      <h3>Send Requests</h3>
+      <ul class="small">
+        <li>Add the dev rules first, if RLS is on</li>
+        <li>Save each request in a collection</li>
+        <li>Note every status code you get</li>
+        <li>Which endpoints are tricky for your app? Write them down for Claude.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>The steps are on the class site. "The notes you write about your endpoints are context for Claude next lecture."</p>
+    <p>Postman: free account at postman.com, desktop app or web.</p>
+  </aside>
+</section>
+
+</div>
+<script src="../shared/deck.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+{
+  "info": {
+    "name": "Ticked API (Supabase)",
+    "description": "The requests from the RESTful APIs lecture. Set the collection variables base_url and publishable_key first (Collection \u2192 Variables). After POST /users and POST /tasks, copy the new ids into user_id and task_id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://<your-project-id>.supabase.co"
+    },
+    {
+      "key": "publishable_key",
+      "value": "<your-publishable-key>"
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "task_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Read users (GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/users?select=*"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "\"\"",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "200 + JSON array. [] with RLS on and no policies."
+      }
+    },
+    {
+      "name": "2. Create a user (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Prefer",
+            "value": "return=representation"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/users"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo@ticked.app\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "201. Copy the id into the user_id variable."
+      }
+    },
+    {
+      "name": "3. Create a task (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Prefer",
+            "value": "return=representation"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/tasks"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Finish the API lecture\",\n  \"user_id\": \"{{user_id}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "201. Copy the id into the task_id variable."
+      }
+    },
+    {
+      "name": "4. Read tasks (GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/tasks?select=*"
+        }
+      }
+    },
+    {
+      "name": "5. Read open tasks (GET + filter)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/tasks?is_complete=eq.false"
+        }
+      }
+    },
+    {
+      "name": "6. Tick a task (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/tasks?id=eq.{{task_id}}"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_complete\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "204 No Content: it worked, nothing to send back."
+      }
+    },
+    {
+      "name": "7. Delete a task (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{publishable_key}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{publishable_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/rest/v1/tasks?id=eq.{{task_id}}"
+        },
+        "description": "204 No Content. Always filter a DELETE."
+      }
+    }
+  ]
+}
