@@ -86,6 +86,25 @@ Install Postman and sign in. Log in to supabase.com in the browser you present f
 
 The backup needs the Demo User row (from Lecture 1) and the dev policies.
 
-## Heads-up for the authentication lecture
+## Heads-up for the authentication lecture (Monday)
 
-It backs up and drops these tables, rebuilds `users` as a mirror of `auth.users`, and replaces the "dev: open access until auth" policies with per-user rules on `user_id`. The Demo User approach in `db.js` goes away then.
+What it does: export each table to CSV, drop the tables, rebuild `users` as a mirror of `auth.users` (trigger), and add per-user RLS with `auth.uid() = user_id`. The "dev: open access until auth" policies are dropped along with the tables. The Demo User approach in `db.js` goes away.
+
+What our two lectures hand it:
+
+| Monday needs | Where it is after Lecture 2 |
+|---|---|
+| "The directory running your supabase project" | The root `~/demos/ticked` (the `.mcp.json` moved there) |
+| User journey | `front-end/app_outline/user_journey.md` |
+| Current schema | `supabase/schema.sql` |
+| Backed-up data | Make a folder, e.g. `supabase/backups/`. Export **all 5 tables** (the lesson shows users and tasks; Ticked also has projects, tags, task_tags) |
+| API URL + key (front-end prompt) | `front-end/.env` (the publishable key is fine to paste) |
+| supabase-js | Used if you answered "supabase-js" in Lecture 2. If you used the fetch backup, the front-end prompt switches it over |
+
+Things to expect Monday:
+- **Backed-up rows belong to the Demo User, who has no login.** They can't be re-imported as they are (their `user_id` won't be in `auth.users`). Tell Claude: "Register one test account first, then re-import the backups under that account's id", or skip the re-import.
+- **Email confirmation is on by default.** Playwright can't open an inbox, and the built-in email sender allows only a few emails an hour. For the demo, turn off **Confirm email** (Authentication → Sign In / Providers → Email). Mention that real apps keep it on.
+- **`tags` has no `user_id`** (shared on purpose). Claude will ask: tags readable by any logged-in user is fine. `task_tags` follows its task's owner.
+- **Kept the old tables instead of dropping them?** The dev rules are `to anon`. A logged-in user is `authenticated`, so they see empty lists. Same `[]` lesson as Lecture 1.
+- **401 vs 403** is a callback: Lecture 1 got 401 as anon; logged in and blocked by RLS gives 403.
+- **`Authorization: Bearer`** is another callback: in Postman it carried the publishable key, and after login supabase-js puts the user's access token (a JWT) there.

@@ -73,7 +73,8 @@ Paste or adapt this if Claude asks before it plans:
 - Keys: I already put VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in front-end/.env.
   Use import.meta.env. Never use the secret key.
 - RLS: keep the existing "dev: open access until auth" policies. Don't add or remove policies.
-- supabase-js or fetch: either is fine; keep all Supabase code in one service file.
+- Use supabase-js (@supabase/supabase-js) and keep all Supabase code in one service file.
+  (The authentication lecture uses supabase-js for logins, so this saves a rewrite.)
 ```
 
 **Backup:** `backup-ticked-fullstack/` (see its README).
