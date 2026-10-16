@@ -138,6 +138,14 @@ walk through the applications features yourself and test them out to ensure a su
   <aside class="notes">
     <p>While Claude reads: "This is the request we sent from Postman, now sent by Ticked." Walk the top row, then the way back.</p>
     <p>Three rules (the yellow boxes). Ticked already follows them: all data goes through <code>src/data/db.js</code> (the service layer's front door), and <code>TaskContext</code> already shows loading and errors and re-loads after every change. "That's why we built it this way in the SPA lectures: today only the data file should change."</p>
+    <p><b>What <code>db.js</code> is</b> (<code>front-end/src/data/db.js</code>, made by the front-end-agent in the SPA lectures):</p>
+    <ul>
+      <li>The <b>only</b> file that reads or changes data (a rule in <code>CLAUDE.md</code>).</li>
+      <li>Today it keeps 4 arrays in memory shaped like our tables, filled with seed data on load. That's why a refresh resets everything.</li>
+      <li>It exports async functions the pages call: <code>listTasks</code>, <code>createTask</code>, <code>setTaskComplete</code>, <code>deleteTask</code>, <code>listProjects</code>, <code>createProject</code>…</li>
+    </ul>
+    <p><b>What changes today:</b> only the insides of those functions. Same names, inputs and outputs. Example: <code>setTaskComplete(id, true)</code> stops flipping a value in an array and sends <code>PATCH /rest/v1/tasks?id=eq.&lt;id&gt;</code> with <code>{"is_complete": true}</code>, the same request as in Postman. The pages never notice.</p>
+    <p>Say: "The front-end team left us one door, <code>db.js</code>. Today we put the API behind that door."</p>
   </aside>
 </section>
 
