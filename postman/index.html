@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticked API in Postman · Full-Stack Apps</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f4f6f9; --grid:#dce3ee; --ink:#1b2230; --muted:#5b6577; --blue:#2552c9; --green:#13795b; --sticky:#ffe76a; --red:#b3261e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: var(--ink); font-size: 18px; line-height: 1.55;
+    background: var(--paper) linear-gradient(var(--grid) 1px, transparent 1px) -1px -1px / 40px 40px,
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px) -1px -1px / 40px 40px; }
+  main { max-width: 900px; margin: 0 auto; padding: 48px 28px 80px; }
+  .back { color: var(--blue); font-weight: 700; }
+  h1 { font: 800 clamp(40px, 6vw, 64px)/0.98 'Bricolage Grotesque', sans-serif; letter-spacing: -0.03em; margin: 18px 0 14px; }
+  .lede { color: var(--muted); font-size: 20px; margin: 0 0 28px; max-width: 62ch; }
+  h2 { font: 800 28px/1.15 'Bricolage Grotesque', sans-serif; margin: 0 0 10px; }
+  h3 { font: 800 21px 'Bricolage Grotesque', sans-serif; margin: 26px 0 6px; }
+  section { background: #fff; border: 2px solid var(--ink); border-radius: 4px; padding: 28px; margin-bottom: 28px; }
+  section > p { margin: 0 0 14px; }
+  .choose { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .choose a { display: block; background: #fff; border: 2px solid var(--grid); border-radius: 4px; padding: 16px 18px; color: var(--ink); text-decoration: none; }
+  .choose a:hover, .choose a:focus-visible { border-color: var(--blue); }
+  .choose b { display: block; color: var(--blue); font-size: 20px; }
+  .choose span { color: var(--muted); font-size: 16px; }
+  @media (max-width: 700px) { .choose { grid-template-columns: 1fr; } }
+  ol.steps { padding-left: 1.4em; margin: 0 0 8px; }
+  ol.steps > li { margin-bottom: 14px; }
+  ol.steps > li::marker { font-weight: 700; color: var(--blue); }
+  code { font-size: 0.9em; background: #e8ecf3; padding: 1px 5px; border-radius: 3px; }
+  .cmdwrap { position: relative; margin: 8px 0 6px; }
+  pre.cmd { background: var(--ink); color: #fff; padding: 16px 18px; padding-right: 90px; border-radius: 4px; overflow-x: auto; margin: 0; font-size: 15px; }
+  pre.cmd code { background: none; padding: 0; }
+  pre.json { max-height: 420px; }
+  .copy { position: absolute; top: 10px; right: 10px; font: 700 14px 'Atkinson Hyperlegible'; padding: 6px 12px; border-radius: 4px; border: 0; background: var(--sticky); color: var(--ink); cursor: pointer; }
+  .note { margin: 10px 0 0; padding: 14px 18px; background: var(--sticky); transform: rotate(-0.4deg); }
+  .req { border: 2px solid var(--grid); border-radius: 4px; padding: 16px 18px; margin: 14px 0; }
+  .req h3 { margin: 0 0 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .method { font: 700 15px 'Atkinson Hyperlegible'; color: #fff; background: var(--blue); padding: 2px 8px; border-radius: 3px; }
+  .method.post { background: var(--green); } .method.patch { background: #8a5a00; } .method.delete { background: var(--red); }
+  .req dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; }
+  .req dt { font-weight: 700; color: var(--muted); }
+  .req dd { margin: 0; overflow-wrap: anywhere; }
+  .expect { color: var(--green); font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { font-size: 15px; color: var(--muted); }
+  .dl { display: inline-block; background: var(--sticky); color: var(--ink); font-weight: 700; text-decoration: none; padding: 12px 18px; border-radius: 4px; margin: 4px 0 10px; }
+  details { margin-top: 10px; } summary { cursor: pointer; font-weight: 700; color: var(--blue); }
+  a { color: var(--blue); }
+  a:focus-visible, summary:focus-visible, .copy:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← Full-Stack Apps home</a>
+  <h1>Ticked API in Postman</h1>
+  <p class="lede">Send every CRUD request to Supabase's API by hand, just like in class. Build it yourself (best for learning), or import the ready-made collection at the bottom.</p>
+
+  <div class="choose">
+    <a href="#build"><b>Build it yourself</b><span>Set up, then every request in order. About 15 minutes.</span></a>
+    <a href="#import"><b>Import the ready-made collection</b><span>Download or copy the JSON, then set two variables.</span></a>
+  </div>
+
+  <section>
+    <h2>Before you start</h2>
+    <ol class="steps">
+      <li><b>Postman is installed</b> and you're signed in. Not yet? See step 1 on the <a href="../#homework">home page</a>.</li>
+      <li><b>Your Project URL:</b> Supabase → <b>Integrations → Data API</b> → <b>Project URL</b>. It ends in <code>/rest/v1/</code>.</li>
+      <li><b>Your publishable key:</b> <b>Project Settings → API Keys</b> → <b>Publishable key</b> (starts <code>sb_publishable_</code>). Never the secret key.</li>
+      <li><b>Using your own app?</b> Everything below works the same. Swap <code>users</code> and <code>tasks</code> for your table names, and the bodies for your columns.</li>
+    </ol>
+  </section>
+
+  <section id="build">
+    <h2>Build it yourself</h2>
+
+    <h3>1 · Make the collection</h3>
+    <ol class="steps">
+      <li>Postman → <b>New</b> → <b>Collection</b>. Name it <b>Ticked API</b>.</li>
+      <li>Click the collection, open the <b>Variables</b> tab, and add two rows:
+        <table>
+          <tr><th>Variable</th><th>Value</th></tr>
+          <tr><td><code>base_url</code></td><td>Your Project URL. Keep <code>/rest/v1</code>, delete only the last <code>/</code>:<br><code>https://your-project-id.supabase.co/rest/v1</code></td></tr>
+          <tr><td><code>publishable_key</code></td><td>Your publishable key</td></tr>
+        </table></li>
+      <li>Click <b>Save</b> (top right). Easy to forget: without it, the variables are empty.</li>
+    </ol>
+
+    <h3>2 · The first request, with the headers</h3>
+    <ol class="steps">
+      <li>Inside the collection: <b>Add request</b>. Name it <b>Read users</b>.</li>
+      <li><b>Headers</b> tab → <b>Bulk Edit</b> (right side) → paste:
+        <div class="cmdwrap"><pre class="cmd"><code>apikey:{{publishable_key}}
+Authorization:Bearer {{publishable_key}}
+Content-Type:application/json</code></pre><button type="button" class="copy">Copy</button></div>
+        Click <b>Key-Value Edit</b> to switch back. The <code>{{publishable_key}}</code> parts should be orange or green. <b>Red</b> = Postman can't find the variable: save the collection variables.</li>
+      <li>Method <b>GET</b>, URL <code>{{base_url}}/users</code> → <b>Send</b>.</li>
+    </ol>
+    <p class="note"><b>Got <code>[]</code>?</b> The request worked, but Row Level Security hid every row. Add the temporary dev rules (step 3 on the <a href="../#homework">home page</a>), then send again.</p>
+
+    <h3>3 · Every next request</h3>
+    <ol class="steps">
+      <li>Right-click <b>Read users</b> → <b>Duplicate</b>. The 3 headers come along. Rename it, then change the method and URL.</li>
+      <li>Requests with a body: <b>Body</b> tab → <b>raw</b> → <b>JSON</b>, then paste the body.</li>
+      <li>After each one, look at three things: the <b>status code</b>, the <b>response body</b>, and the <b>Table Editor</b> in Supabase (refresh it).</li>
+    </ol>
+
+    <h3>4 · The requests, in order</h3>
+
+    <div class="req">
+      <h3><span class="method post">POST</span> Create a user</h3>
+      <dl>
+        <dt>URL</dt><dd><code>{{base_url}}/users</code></dd>
+        <dt>Add header</dt><dd><code>Prefer:return=representation</code> (sends the new row back)</dd>
+        <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"name":"Demo User","email":"demo@ticked.app"}</code></pre><button type="button" class="copy">Copy</button></div></dd>
+        <dt>Expect</dt><dd><span class="expect">201</span> + the row. <b>Copy its <code>id</code>.</b> Keep this user: your app uses it in Part II.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <h3><span class="method post">POST</span> Create a task</h3>
+      <dl>
+        <dt>URL</dt><dd><code>{{base_url}}/tasks</code> (same Prefer header)</dd>
+        <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"title":"Finish the API lecture","user_id":"PASTE THE USER ID"}</code></pre><button type="button" class="copy">Copy</button></div></dd>
+        <dt>Expect</dt><dd><span class="expect">201</span> + the row. <b>Copy the task's <code>id</code></b> (not the user's).</dd>
+        <dt>Try</dt><dd>Body <code>{"title":"x"}</code> with no <code>user_id</code>: <b>400</b> "null value in column user_id". The database's rule, passed back by the API.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <h3><span class="method">GET</span> Read the tasks that aren't done</h3>
+      <dl>
+        <dt>URL</dt><dd><code>{{base_url}}/tasks?is_complete=eq.false</code></dd>
+        <dt>Body</dt><dd>none</dd>
+        <dt>Expect</dt><dd><span class="expect">200</span> + a list with your task. <code>eq</code> means equals: the filter lives in the URL.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <h3><span class="method patch">PATCH</span> Tick the task off</h3>
+      <dl>
+        <dt>URL</dt><dd><code>{{base_url}}/tasks?id=eq.PASTE THE TASK ID</code></dd>
+        <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"is_complete":true}</code></pre><button type="button" class="copy">Copy</button></div></dd>
+        <dt>Expect</dt><dd><span class="expect">204</span> (done, nothing to send back). Send the GET above again: the task is gone from the "not done" list.</dd>
+      </dl>
+    </div>
+
+    <div class="req">
+      <h3><span class="method delete">DELETE</span> Delete the task</h3>
+      <dl>
+        <dt>URL</dt><dd><code>{{base_url}}/tasks?id=eq.PASTE THE TASK ID</code></dd>
+        <dt>Body</dt><dd>none</dd>
+        <dt>Expect</dt><dd><span class="expect">204</span>. Check the Table Editor: the task is gone. <b>Leave the user.</b></dd>
+        <dt>Careful</dt><dd>204 also comes back when <b>nothing</b> matched (wrong id). To be sure, add <code>Prefer:return=representation</code>: you get the deleted row back, or <code>[]</code> if nothing was deleted. Always filter a PATCH and a DELETE: without <code>?id=eq.</code> it would hit every row.</dd>
+      </dl>
+    </div>
+
+    <h3>5 · Break it on purpose</h3>
+    <ol class="steps">
+      <li>Change one letter of <code>publishable_key</code> → <b>401</b> "Invalid API key". Change it back.</li>
+      <li>Request <code>{{base_url}}/taks</code> (typo) → <b>404</b>.</li>
+    </ol>
+  </section>
+
+  <section id="import">
+    <h2>Import the ready-made collection</h2>
+    <p>The same 7 requests, already built. Good as a check against yours, or as a backup.</p>
+    <ol class="steps">
+      <li>Get the collection: <a class="dl" href="../demo-kit/Ticked-API.postman_collection.json" download>Download Ticked-API.postman_collection.json</a><br>
+        or copy the JSON from the box below.</li>
+      <li>Postman → <b>Import</b> (top left). Drag the file in, <b>or</b> paste the copied JSON into the box.</li>
+      <li>Click the new <b>Ticked API (Supabase)</b> collection → <b>Variables</b>. Fill in <code>base_url</code> (ending in <code>/rest/v1</code>) and <code>publishable_key</code>. <b>Save</b>.</li>
+      <li>Run the requests in their numbered order. After <b>2. Create a user</b>, copy the new id into the <code>user_id</code> variable. After <b>3. Create a task</b>, copy its id into <code>task_id</code>. <b>Save</b> each time. Requests 6 and 7 use <code>{{task_id}}</code>.</li>
+    </ol>
+    <details>
+      <summary>Show the collection JSON</summary>
+      <div class="cmdwrap"><pre class="cmd json"><code id="json">Loading…</code></pre><button type="button" class="copy">Copy</button></div>
+    </details>
+  </section>
+
+  <section>
+    <h2>When something breaks</h2>
+    <table>
+      <tr><th>You see</th><th>It means</th><th>Fix</th></tr>
+      <tr><td><code>[]</code> but the Table Editor has rows</td><td>RLS is on with no rule for the publishable key</td><td>Add the dev rules</td></tr>
+      <tr><td><b>401</b> "violates row-level security policy"</td><td>Same: RLS said no</td><td>Add the dev rules</td></tr>
+      <tr><td><b>401</b> "Invalid API key"</td><td>Wrong or partial key</td><td>Re-copy the publishable key, Save</td></tr>
+      <tr><td><code>PGRST125</code> "Invalid path"</td><td><code>/rest/v1</code> is in the URL twice</td><td><code>base_url</code> already has it: the URL is <code>{{base_url}}/users</code></td></tr>
+      <tr><td><b>404</b></td><td>Typo in the table name</td><td>Check the URL</td></tr>
+      <tr><td><b>400</b> "null value in column…"</td><td>A required column is missing from the body</td><td>Add it (e.g. <code>user_id</code>)</td></tr>
+      <tr><td><b>400</b> "invalid input syntax for type uuid"</td><td>The id in the URL or body isn't a real id</td><td>Paste the whole id, no quotes or spaces</td></tr>
+      <tr><td>POST gives 201 but an empty body</td><td>No <code>Prefer</code> header</td><td>Add <code>Prefer:return=representation</code></td></tr>
+      <tr><td>DELETE or PATCH gives 204, nothing changed</td><td>The id matched no row (e.g. the user's id instead of the task's)</td><td>Check the id with a GET</td></tr>
+      <tr><td>Red <code>{{variables}}</code></td><td>Variables not saved, or request is outside the collection</td><td>Save the Variables tab</td></tr>
+    </table>
+  </section>
+</main>
+<script>
+  fetch('../demo-kit/Ticked-API.postman_collection.json')
+    .then((r) => r.text())
+    .then((t) => { document.getElementById('json').textContent = t })
+    .catch(() => { document.getElementById('json').textContent = 'Could not load the JSON here. Use the Download button above.' })
+  document.querySelectorAll('.copy').forEach((b) => b.onclick = async () => {
+    await navigator.clipboard.writeText(b.previousElementSibling.innerText.trim()); b.textContent = 'Copied'; setTimeout(() => (b.textContent = 'Copy'), 1500)
+  })
+</script>
+</body>
+</html>

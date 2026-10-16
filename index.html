@@ -72,7 +72,7 @@
       <ol>
         <li><a href="ticked/" target="_blank" rel="noopener"><b>Ticked, front-end only</b><span>The app as we left it: no database yet, so it forgets everything on refresh.</span></a></li>
         <li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener"><b>Postman</b><span>Free account. The desktop app or the web version both work.</span></a></li>
-        <li><a href="demo-kit/Ticked-API.postman_collection.json" download><b>Ticked API collection (backup)</b><span>Ready-made class requests, if the live build stalls. Download, Postman → Import, set its two variables.</span></a></li>
+        <li><a href="postman/" target="_blank" rel="noopener"><b>Ticked API in Postman</b><span>Step-by-step: build every request yourself, or import the ready-made collection.</span></a></li>
       </ol>
     </section>
     <section>
@@ -87,7 +87,7 @@
     </section>
   </div>
 
-  <h3>Homework Part I: send requests to your API</h3>
+  <h3 id="homework">Homework Part I: send requests to your API</h3>
   <section class="install">
     <p><b>In this order:</b> (1) do steps 1–5 below with your <b>Netflix Clone</b>'s database, (2) then do steps 2–5 again with your <b>personal project</b>'s database, (3) then 50 steps of the FreeCodeCamp Python certification.</p>
 
@@ -135,6 +135,7 @@ Using the Supabase MCP, add TEMPORARY development policies that let the anon rol
 
     <h4>4 · Send every CRUD request in Postman</h4>
     <ol class="steps">
+      <li>The full walkthrough, with examples and a fix-it table, is on its own page: <a href="postman/" target="_blank" rel="noopener">Ticked API in Postman</a>. The short version:</li>
       <li>New collection → <b>Variables</b>: <code>base_url</code> and <code>publishable_key</code>. Click <b>Save</b>.</li>
       <li>New request → <b>Headers → Bulk Edit</b> → paste, then <b>Duplicate</b> this request for every new one:
         <div class="cmdwrap"><pre class="cmd"><code>apikey:{{publishable_key}}
