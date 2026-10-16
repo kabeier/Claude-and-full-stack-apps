@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Not found · Full-Stack Apps</title>
+<script>
+  // GitHub Pages can't route SPA deep links, so send /ticked/... back to the app with the path in ?p=
+  const base = '/Claude-and-full-stack-apps/ticked'
+  if (location.pathname.startsWith(base + '/')) location.replace(base + '/?p=' + encodeURIComponent(location.pathname.slice(base.length) + location.search + location.hash))
+</script>
+</head>
+<body style="font-family: system-ui, sans-serif; padding: 48px">
+  <h1>Page not found</h1>
+  <p><a href="/Claude-and-full-stack-apps/">Back to Full-Stack Apps</a></p>
+</body>
+</html>

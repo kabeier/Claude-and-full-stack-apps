@@ -81,17 +81,17 @@
   <ol class="steps">
     <li>Open the Tasks page</li>
     <li>Tick off "Buy groceries"</li>
-    <li>Create a project called "School"</li>
+    <li>Create a project called "Gym"</li>
     <li>Show only the tasks that aren't done</li>
     <li>Delete one task</li>
   </ol>
   <p class="muted small" style="margin-top:12px">In chat: the <b>method</b> and the <b>URL</b>. Bonus: does it need a body?</p>
   <aside class="notes">
-    <p>The only activity today, about 3 minutes. Read each one, wait 10 seconds for chat, give the answer:</p>
+    <p>The only activity today, about 3 minutes. Open <a href="../ticked/" target="_blank" rel="noopener">Ticked (front-end only)</a> (also on the homepage) and do each action in the app as you ask it. Wait 10 seconds for chat, then give the answer:</p>
     <ol>
       <li><code>GET /tasks</code> (no body)</li>
       <li><code>PATCH /tasks?id=eq.&lt;id&gt;</code>, body <code>{ "is_complete": true }</code></li>
-      <li><code>POST /projects</code>, body <code>{ "name": "School", "user_id": "…" }</code></li>
+      <li><code>POST /projects</code>, body <code>{ "name": "Gym", "user_id": "…" }</code></li>
       <li><code>GET /tasks?is_complete=eq.false</code> (the filter is in the URL)</li>
       <li><code>DELETE /tasks?id=eq.&lt;id&gt;</code> (no body, the URL says which)</li>
     </ol>
