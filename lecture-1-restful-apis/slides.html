@@ -174,14 +174,33 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
   </table>
   <p class="bottomline">After each one: the status code, the body, and the Table Editor.</p>
   <aside class="notes">
-    <p><b>** LIVE, about 8 minutes. ** Keep the Table Editor open in a second window</b> and refresh it after each request: "Postman changed a real row."</p>
-    <ul>
-      <li><b>POST users</b>: without <code>Prefer:return=representation</code> you get 201 and an empty body. Add the header to see the new row and its <code>id</code>. Copy the id. <b>Keep this user:</b> next lecture, Ticked uses it as its demo user.</li>
-      <li><b>POST tasks</b>: paste the user's id as <code>user_id</code>. Ask: "What happens without user_id?" Try it: <b>400</b>, not-null. Copy the task's id.</li>
-      <li><b>GET</b> with the filter. Then <b>PATCH</b>: 204, nothing to send back. GET again: is_complete is true.</li>
-      <li><b>DELETE</b> the task: 204. Leave the user.</li>
-    </ul>
-    <p>Short on time? Do POST users, POST tasks, PATCH, and go to status codes.</p>
+    <p><b>** LIVE, about 8 minutes. ** Keep the Table Editor open in a second window</b> and refresh it after each request: "Postman changed a real row." Each new request: <b>Duplicate</b> the GET users one (keeps the 3 headers). Bodies go in <b>Body → raw → JSON</b>.</p>
+    <ol>
+      <li><b>Create the Demo User</b><br>
+        <code>POST {{base_url}}/users</code><br>
+        Add header: <code>Prefer:return=representation</code><br>
+        Body: <code>{"name":"Demo User","email":"demo@ticked.app"}</code><br>
+        Expect: <b>201</b> + the row. <b>Copy its <code>id</code>.</b> Keep this user: next lecture, Ticked uses it.<br>
+        (Without the Prefer header: 201 with an empty body.)</li>
+      <li><b>Create a task</b><br>
+        <code>POST {{base_url}}/tasks</code> (same Prefer header)<br>
+        Body: <code>{"title":"Finish the API lecture","user_id":"PASTE USER ID"}</code><br>
+        Expect: <b>201</b> + the row. <b>Copy the task's <code>id</code>.</b></li>
+      <li><b>Ask: "What if we leave out user_id?"</b><br>
+        Same request, body <code>{"title":"x"}</code><br>
+        Expect: <b>400</b> "null value in column user_id". The database's rule, passed back by the API.</li>
+      <li><b>Only the tasks that aren't done</b><br>
+        <code>GET {{base_url}}/tasks?is_complete=eq.false</code> (no body)<br>
+        Expect: <b>200</b> + our task. "The filter lives in the URL."</li>
+      <li><b>Tick it off</b><br>
+        <code>PATCH {{base_url}}/tasks?id=eq.PASTE TASK ID</code><br>
+        Body: <code>{"is_complete":true}</code><br>
+        Expect: <b>204</b> (done, nothing to send back). Run step 4 again: now <code>[]</code>.</li>
+      <li><b>Delete it</b><br>
+        <code>DELETE {{base_url}}/tasks?id=eq.PASTE TASK ID</code> (no body)<br>
+        Expect: <b>204</b>. Table Editor: the task is gone. <b>Leave the Demo User.</b></li>
+    </ol>
+    <p>Short on time? Do 1, 2 and 5, then go to status codes.</p>
     <p><b>Backup:</b> import <code>demo-kit/Ticked-API.postman_collection.json</code> (File → Import) and set its two variables.</p>
   </aside>
 </section>
