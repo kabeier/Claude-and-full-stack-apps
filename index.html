@@ -41,6 +41,9 @@
   .install h4:first-child { margin-top: 0; }
   .install .steps { display: block; list-style: decimal; padding-left: 1.4em; margin: 0 0 14px; }
   .install .steps li::marker { font-weight: 700; color: var(--blue); } .install .steps li { margin-bottom: 12px; }
+  .os { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+  .os h5 { font: 700 17px 'Bricolage Grotesque', sans-serif; margin: 6px 0 4px; }
+  @media (max-width: 760px) { .os { grid-template-columns: 1fr; } }
   .install code { font-size: 0.9em; background: #e8ecf3; padding: 1px 5px; border-radius: 3px; }
   .cmdwrap { position: relative; margin: 8px 0 6px; }
   pre.cmd { background: var(--ink); color: #fff; padding: 16px 18px; padding-right: 90px; border-radius: 4px; overflow-x: auto; margin: 0; font-size: 15px; }
@@ -85,13 +88,39 @@
 
   <h3>Homework Part I: send requests to your API</h3>
   <section class="install">
-    <h4>1 · Find your API's address and key</h4>
+    <h4>1 · Install Postman</h4>
+    <div class="os">
+      <div>
+        <h5>Mac</h5>
+        <ol class="steps">
+          <li>Check your chip: Apple menu → <b>About This Mac</b>. It says <b>Apple</b> (M1, M2…) or <b>Intel</b>.</li>
+          <li>Go to <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">postman.com/downloads</a> and download the Mac version for your chip.</li>
+          <li>Open the <code>.zip</code> in Downloads. Drag <b>Postman</b> into <b>Applications</b>.</li>
+          <li>Open it (⌘ Space → "Postman"). If the Mac warns it came from the internet, click <b>Open</b>.</li>
+          <li>Have Homebrew? This does steps 2–3 for you:
+            <div class="cmdwrap"><pre class="cmd"><code>brew install --cask postman</code></pre><button type="button" class="copy">Copy</button></div></li>
+        </ol>
+      </div>
+      <div>
+        <h5>Windows with Ubuntu (WSL)</h5>
+        <ol class="steps">
+          <li>Install Postman on <b>Windows</b>, not inside Ubuntu. It's a desktop app. It still reaches Supabase and your <code>npm run dev</code> app on <code>localhost</code>.</li>
+          <li>Go to <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">postman.com/downloads</a> and download <b>Windows</b>. Run the <code>.exe</code>: it installs and opens by itself.</li>
+          <li>Or paste this in <b>PowerShell</b> (not the Ubuntu terminal):
+            <div class="cmdwrap"><pre class="cmd"><code>winget install --id Postman.Postman -e</code></pre><button type="button" class="copy">Copy</button></div></li>
+          <li>Find it later: <b>Start menu → Postman</b>.</li>
+        </ol>
+      </div>
+    </div>
+    <p><b>Then, everyone:</b> sign in or make a free account when Postman opens. Can't install it? Use <a href="https://web.postman.co" target="_blank" rel="noopener">web.postman.co</a>, and if it asks how to send requests, choose the <b>Cloud Agent</b>.</p>
+
+    <h4>2 · Find your API's address and key</h4>
     <ol class="steps">
       <li>In your Supabase project: <b>Integrations → Data API</b>. Copy the <b>Project URL</b> (without <code>/rest/v1</code>). The <b>Docs</b> link there explains every endpoint for your tables.</li>
       <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b>. Never use the secret key in Postman or in front-end code.</li>
     </ol>
 
-    <h4>2 · Let the publishable key in (temporary)</h4>
+    <h4>3 · Let the publishable key in (temporary)</h4>
     <ol class="steps">
       <li>Send <code>GET {{base_url}}/rest/v1/&lt;a table&gt;</code>. If you get <code>[]</code> but the Table Editor has rows, Row Level Security is on with no rules.</li>
       <li>In your <code>supabase</code> folder, start <code>claude</code> and paste this (change the table names to yours):
@@ -101,7 +130,7 @@ Using the Supabase MCP, add TEMPORARY development policies that let the anon rol
       <li>Read the SQL before you approve. These rules are for development only; real per-user rules come with logins in a future lecture.</li>
     </ol>
 
-    <h4>3 · Send every CRUD request in Postman</h4>
+    <h4>4 · Send every CRUD request in Postman</h4>
     <ol class="steps">
       <li>New collection → <b>Variables</b>: <code>base_url</code> and <code>publishable_key</code>. Click <b>Save</b>.</li>
       <li>New request → <b>Headers → Bulk Edit</b> → paste, then <b>Duplicate</b> this request for every new one:
@@ -113,7 +142,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
       <li>If your tables have a <code>user_id</code>, <b>keep one user row</b>: your app uses it in Part II, until we add logins.</li>
     </ol>
 
-    <h4>4 · Write your notes for Claude</h4>
+    <h4>5 · Write your notes for Claude</h4>
     <ol class="steps">
       <li>Make <code>supabase/api_notes.md</code>: one example request per table that worked, plus anything tricky (required columns, foreign keys, filters your app needs, errors you hit).</li>
       <li>This is context for Claude in Part II. If you can explain your API, you can check Claude's work.</li>
@@ -122,7 +151,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
 
   <h3>Homework Part II: make it full-stack</h3>
   <section class="install">
-    <h4>5 · One project folder</h4>
+    <h4>6 · One project folder</h4>
     <ol class="steps">
       <li>Commit first (<code>git add -A && git commit -m "Before full-stack"</code>), so you can undo anything.</li>
       <li>In your project's root (the folder that has <code>supabase/</code> inside it), start <code>claude</code> and paste:
@@ -144,7 +173,7 @@ Show me the plan (what moves where) first and wait for my approval.</code></pre>
       <div class="cmdwrap"><pre class="cmd"><code>mkdir -p .claude/agents && curl -fsSL https://raw.githubusercontent.com/kabeier/Databases-and-Supabase/main/demo-kit/.claude/agents/supabase-agent.md -o .claude/agents/supabase-agent.md</code></pre><button type="button" class="copy">Copy</button></div>
     </details>
 
-    <h4>6 · Keep the key secret</h4>
+    <h4>7 · Keep the key secret</h4>
     <ol class="steps">
       <li>Make <code>front-end/.env</code> (next to <code>package.json</code>) with your values, no quotes:
         <div class="cmdwrap"><pre class="cmd"><code>VITE_SUPABASE_URL=https://your-project-id.supabase.co
@@ -152,7 +181,7 @@ VITE_SUPABASE_ANON_KEY=your-publishable-key</code></pre><button type="button" cl
       <li>Add a line with <code>.env</code> to the <code>.gitignore</code> in your project root (make the file if it isn't there). Run <code>git status</code>: <code>.env</code> must <b>not</b> be listed.</li>
     </ol>
 
-    <h4>7 · Hand it to Claude, then review the plan</h4>
+    <h4>8 · Hand it to Claude, then review the plan</h4>
     <ol class="steps">
       <li>In Claude (project root), type <code>/model</code> and pick <b>Opus</b>. Paste the prompt:
         <div class="cmdwrap"><pre class="cmd" style="white-space:pre-wrap"><code>My current front-end application is working as desired and I want to preserve the existing UI and user experience along with my supabase projects database structure. Now I would like to integrate these two projects as one (expose API endpoints and connect UI actions within the React app to the Supabase project) to create a full stack application.
@@ -168,7 +197,7 @@ Once the Sub-Agents return a completed action use both the Playwright MCP and th
       <li>Asked about <code>user_id</code>? "Use the one user in my users table for every new row. No login yet." Asked about the old fake data? "Remove it. The database is the source of truth."</li>
     </ol>
 
-    <h4>8 · Prove it, then commit</h4>
+    <h4>9 · Prove it, then commit</h4>
     <ol class="steps">
       <li><code>cd front-end && npm run dev</code>. Add something. <b>Refresh. Still there?</b> Find the row in the Table Editor.</li>
       <li>Add a row in the Table Editor, refresh your app: it should show up.</li>
