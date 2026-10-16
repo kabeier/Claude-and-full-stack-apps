@@ -67,8 +67,8 @@ Once the Sub-Agents return a completed action use both the Playwright MCP and th
 Paste or adapt this if Claude asks before it plans:
 
 ```text
-- user_id: there's no login yet. Use the first user in the users table (the one I made in
-  Postman) for every new project and task. Don't add a login or change the schema.
+- user_id: there's no login yet. Use the Demo User I made in Postman (email demo@ticked.app)
+  for every new project and task. Don't add a login or change the schema.
 - Seed data: remove it. The database is the only source of truth now.
 - Keys: I already put VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in front-end/.env.
   Use import.meta.env. Never use the secret key.
