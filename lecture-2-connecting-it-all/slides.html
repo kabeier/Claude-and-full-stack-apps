@@ -87,7 +87,13 @@ VITE_SUPABASE_ANON_KEY=sb_publishable_…</pre>
   </div>
   <p class="bottomline">Check: <code>git status</code> must not list <code>.env</code>.</p>
   <aside class="notes">
-    <p><b>** LIVE, about 3 minutes. ** You</b> create this file, not Claude: "Secrets are yours to handle." Same key as in Postman. The URL is Postman's <code>base_url</code> <b>without</b> <code>/rest/v1</code> on the end: the code (and supabase-js) adds it.</p>
+    <p><b>** LIVE, about 3 minutes. ** You</b> create this file, not Claude: "Secrets are yours to handle." Same key as in Postman.</p>
+    <p><b>The URL is different from Postman:</b></p>
+    <ul>
+      <li>Postman <code>base_url</code>: <code>https://&lt;id&gt;.supabase.co/rest/v1</code></li>
+      <li><code>.env</code>: <code>VITE_SUPABASE_URL=https://&lt;id&gt;.supabase.co</code>, <b>no <code>/rest/v1</code> and no trailing <code>/</code></b></li>
+    </ul>
+    <p>Say: "The code (and supabase-js) adds <code>/rest/v1</code> itself. Leave it in and the requests go to <code>/rest/v1/rest/v1</code>." Restart <code>npm run dev</code> after making or changing <code>.env</code>.</p>
     <p>"Why <code>VITE_</code>? Vite puts these values into the JavaScript it sends to every browser. The prefix is you saying 'yes, this one is OK to share'. That's why the secret key never gets the prefix."</p>
     <p>"Why hide the publishable key if it's safe to share? Habit, and the curriculum's rule: never commit keys." Add <code>.env</code> to the root <code>.gitignore</code>, run <code>git status</code>: no <code>.env</code> in the list. Commit ("Restructure: front-end + supabase"): it's also the undo point if you need the backup later.</p>
     <p>Anon key = publishable key: the curriculum's name for the variable comes from Supabase's older key names.</p>
