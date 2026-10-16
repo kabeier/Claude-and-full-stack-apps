@@ -87,14 +87,15 @@
   </ol>
   <p class="muted small" style="margin-top:12px">In chat: the <b>method</b> and the <b>URL</b>. Bonus: does it need a body?</p>
   <aside class="notes">
-    <p>The only activity today, about 3 minutes. Open <a href="../ticked/" target="_blank" rel="noopener">Ticked (front-end only)</a> (also on the homepage) and do each action in the app as you ask it. Wait 10 seconds for chat, then give the answer:</p>
+    <p>The only activity today, about 3 minutes. Open <a href="../ticked/" target="_blank" rel="noopener">Ticked (front-end only)</a> (also on the homepage). For each one: <b>ask the question</b>, do the click in the app, wait 10 seconds for chat, then give the answer.</p>
     <ol>
-      <li><code>GET /tasks</code> (no body)</li>
-      <li><code>PATCH /tasks?id=eq.&lt;id&gt;</code>, body <code>{ "is_complete": true }</code></li>
-      <li><code>POST /projects</code>, body <code>{ "name": "Gym", "user_id": "…" }</code></li>
-      <li><code>GET /tasks?is_complete=eq.false</code> (the filter is in the URL)</li>
-      <li><code>DELETE /tasks?id=eq.&lt;id&gt;</code> (no body, the URL says which)</li>
+      <li><b>"Open the Tasks page."</b> Click <b>Tasks</b>.<br>Answer: <code>GET /tasks</code> (no body)</li>
+      <li><b>"Tick off 'Buy groceries'."</b> Click its checkbox.<br>Answer: <code>PATCH /tasks?id=eq.&lt;id&gt;</code>, body <code>{ "is_complete": true }</code></li>
+      <li><b>"Create a project called 'Gym'."</b> Projects → New project → Gym → Create project.<br>Answer: <code>POST /projects</code>, body <code>{ "name": "Gym", "user_id": "…" }</code></li>
+      <li><b>"Show only the tasks that aren't done."</b> Tasks → the <b>Open</b> filter.<br>Answer: <code>GET /tasks?is_complete=eq.false</code> (the filter is in the URL)</li>
+      <li><b>"Delete one task."</b> Delete any task and confirm.<br>Answer: <code>DELETE /tasks?id=eq.&lt;id&gt;</code> (no body, the URL says which)</li>
     </ol>
+    <p>Bodies: only 2 and 3 have one. GET and DELETE put everything in the URL. To finish, refresh Ticked: everything resets. "That's why we need the API and the database."</p>
     <p>Point out the Supabase filter style: <code>column=eq.value</code>. <code>eq</code> means equals.</p>
   </aside>
 </section>
