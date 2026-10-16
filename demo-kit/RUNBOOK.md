@@ -35,7 +35,9 @@ ls ~/demos/ticked/supabase/.claude/agents     # supabase-agent.md should be ther
 
 # Make it a git repo (Lecture 2 shows .env staying out of git)
 cd ~/demos/ticked
-git init 2>/dev/null; printf '.mcp.json\n' >> .gitignore; git add -A && git commit -qm "Ticked: front-end + database"
+git init 2>/dev/null; printf '.mcp.json\n' >> .git/info/exclude; git add -A && git commit -qm "Ticked: front-end + database"
+# (.git/info/exclude = a private .gitignore for this computer only. It keeps .mcp.json
+#  out of git wherever it moves, without a root .gitignore.)
 
 # Snapshot for resetting after the dry run
 cp -a ~/demos/ticked ~/demos/ticked-snapshot
@@ -69,7 +71,7 @@ Install Postman and sign in. Log in to supabase.com in the browser you present f
 | Slide (~min) | Where | Do | Say |
 |---|---|---|---|
 | 4 (~3) | terminal | `cd ~/demos/ticked && claude`, paste the restructure prompt, read the plan, approve. Exit, `claude` again → **Use this MCP server** → `/mcp` (authenticate if asked) → `/agents` (both). Second tab: `cd front-end && npm run dev` still works, Ctrl+C | "One project, two halves, one .claude." |
-| 5 (~7) | editor + terminal | Create `front-end/.env` (URL + publishable key). Make the root `.gitignore` with `.env`. `git status`: no `.env`. Commit: `git add -A && git commit -m "Restructure: front-end + supabase"` | "Secrets are yours to handle, not Claude's." |
+| 5 (~7) | editor + terminal | Create `front-end/.env` (URL + publishable key). Add a line `.env` to `front-end/.gitignore` (React's; no new file). `git status`: no `.env`. Commit: `git add -A && git commit -m "Restructure: front-end + supabase"` | "Secrets are yours to handle, not Claude's." |
 | 6 (~10) | Claude | `/model` → Opus. Paste the connect prompt | — |
 | 7 (~11) | slides | Request-flow diagram while Claude analyzes | "Same request as Postman, sent by Ticked." |
 | 8 (~14) | Claude | Read the plan out loud. Answer its questions (prompts.md → "Likely questions"). Approve; allow edits for the session; approve MCP calls one by one | "Correct it now, before code changes." |

@@ -182,7 +182,7 @@ Show me the plan (what moves where) first and wait for my approval.</code></pre>
       <li>Make <code>front-end/.env</code> (next to <code>package.json</code>) with your values, no quotes. Same URL as your Postman <code>base_url</code> (no <code>/rest/v1</code>, no trailing <code>/</code>):
         <div class="cmdwrap"><pre class="cmd"><code>VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-publishable-key</code></pre><button type="button" class="copy">Copy</button></div></li>
-      <li>Add a line with <code>.env</code> to the <code>.gitignore</code> in your project root (make the file if it isn't there). Run <code>git status</code>: <code>.env</code> must <b>not</b> be listed.</li>
+      <li>Open <code>front-end/.gitignore</code> (the React app's, next to <code>.env</code>) and add a line: <code>.env</code>. Don't make a new one. Run <code>git status</code>: <code>.env</code> must <b>not</b> be listed.</li>
     </ol>
 
     <h4>8 · Hand it to Claude, then review the plan</h4>

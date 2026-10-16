@@ -1,8 +1,0 @@
-# Secrets: never commit these (matches .env in every folder)
-.env
-.env.*
-!.env.example
-
-node_modules
-dist
-.DS_Store
