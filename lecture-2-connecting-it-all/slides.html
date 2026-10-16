@@ -121,6 +121,14 @@ walk through the applications features yourself and test them out to ensure a su
     <p><b>** LIVE. **</b> In Claude (root): <code>/model</code> → Opus. Paste the prompt from <code>demo-kit/prompts.md</code>. It's the curriculum's prompt, word for word.</p>
     <p>Point at three lines: <b>preserve</b> the UI and schema; <b>sub-agents</b> with Claude as the orchestrator; <b>no auth</b> (that's a future lecture). Then the test step: Claude checks its own work with Playwright (clicks the app) and the Supabase MCP (reads the rows).</p>
     <p>Claude analyzes first (2–4 minutes). Use that time for the next slide.</p>
+    <p><b>Claude may ask 4 questions in a pick-list</b> (Row owner, Read scope, Seed data, API). Answer:</p>
+    <ul>
+      <li><b>Row owner:</b> the Demo User (<code>demo@ticked.app</code>)</li>
+      <li><b>Read scope:</b> all rows (no filter). Logins add the per-user filter later.</li>
+      <li><b>Seed data:</b> no. The database is the source of truth.</li>
+      <li><b>API:</b> option 1, <b>Supabase auto REST API</b> via supabase-js in <code>db.js</code>. The same API as Postman. No RPC, no Edge Functions.</li>
+    </ul>
+    <p>Then check the plan: no RLS policy changes, no new columns (tags stay without <code>user_id</code>), and it picks the Demo User by email, not "the first user". If not: "Don't change RLS or the schema. Use the Demo User, demo@ticked.app."</p>
   </aside>
 </section>
 

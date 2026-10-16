@@ -73,6 +73,8 @@ Paste or adapt this if Claude asks before it plans:
 - Keys: I already put VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in front-end/.env.
   Use import.meta.env. Never use the secret key.
 - RLS: keep the existing "dev: open access until auth" policies. Don't add or remove policies.
+- Read scope: show all rows (no per-user filter). Logins add that later.
+- API: the Supabase auto REST API (PostgREST) via supabase-js. No RPC functions, no Edge Functions.
 - Use supabase-js (@supabase/supabase-js) and keep all Supabase code in one service file.
   (The authentication lecture uses supabase-js for logins, so this saves a rewrite.)
 ```
