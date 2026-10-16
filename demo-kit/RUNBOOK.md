@@ -58,7 +58,7 @@ Install Postman and sign in. Log in to supabase.com in the browser you present f
 
 | Slide (~min) | Where | Do | Say |
 |---|---|---|---|
-| 8 (~13) | Supabase + Postman | Integrations → Data API: copy Project URL; it ends in `/rest/v1/`: keep `/rest/v1`, delete the last `/`. Project Settings → API Keys: copy publishable key. Postman: collection "Ticked API", Variables `base_url` + `publishable_key`, **Save**. New request, Headers → Bulk Edit → paste the 3 lines. `GET {{base_url}}/users` | "Supabase wrote the manual for our API: the Docs link." |
+| 8 (~13) | Supabase + Postman | Integrations → Data API: copy Project URL and **delete `/rest/v1/` from the end**. Project Settings → API Keys: copy publishable key. Postman: collection "Ticked API", Variables `base_url` + `publishable_key`, **Save**. New request, Headers → Bulk Edit → paste the 3 lines. `GET {{base_url}}/rest/v1/users` | "Supabase wrote the manual for our API: the Docs link." |
 | 9 (~17) | Postman | Send GET: **200 `[]`**. Duplicate → POST users with the Demo User body: **401** "violates row-level security policy" | "200 but empty. 401 though the key is right. Read the message." |
 | 10 (~20) | terminal | `cd ~/demos/ticked/supabase && claude`, paste the RLS prompt, read the SQL, approve. Dashboard: Authentication → Policies | "Temporary. Logins replace it." |
 | 11 (~23) | Postman + Table Editor | POST users (add `Prefer:return=representation`) → 201, copy id. POST tasks with `user_id` → 201 (try without user_id: 400). GET `tasks?is_complete=eq.false`. PATCH → 204. DELETE → 204. **Keep the Demo User.** | "Postman changed a real row." |

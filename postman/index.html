@@ -67,7 +67,7 @@
     <h2>Before you start</h2>
     <ol class="steps">
       <li><b>Postman is installed</b> and you're signed in. Not yet? See step 1 on the <a href="../#homework">home page</a>.</li>
-      <li><b>Your Project URL:</b> Supabase → <b>Integrations → Data API</b> → <b>Project URL</b>. It ends in <code>/rest/v1/</code>.</li>
+      <li><b>Your Project URL:</b> Supabase → <b>Integrations → Data API</b> → <b>Project URL</b>. It ends in <code>/rest/v1/</code>: you'll delete that part.</li>
       <li><b>Your publishable key:</b> <b>Project Settings → API Keys</b> → <b>Publishable key</b> (starts <code>sb_publishable_</code>). Never the secret key.</li>
       <li><b>Using your own app?</b> Everything below works the same. Swap <code>users</code> and <code>tasks</code> for your table names, and the bodies for your columns.</li>
     </ol>
@@ -82,7 +82,7 @@
       <li>Click the collection, open the <b>Variables</b> tab, and add two rows:
         <table>
           <tr><th>Variable</th><th>Value</th></tr>
-          <tr><td><code>base_url</code></td><td>Your Project URL. Keep <code>/rest/v1</code>, delete only the last <code>/</code>:<br><code>https://your-project-id.supabase.co/rest/v1</code></td></tr>
+          <tr><td><code>base_url</code></td><td>Your Project URL with <b><code>/rest/v1/</code> deleted</b> from the end:<br><code>https://your-project-id.supabase.co</code></td></tr>
           <tr><td><code>publishable_key</code></td><td>Your publishable key</td></tr>
         </table></li>
       <li>Click <b>Save</b> (top right). Easy to forget: without it, the variables are empty.</li>
@@ -96,7 +96,7 @@
 Authorization:Bearer {{publishable_key}}
 Content-Type:application/json</code></pre><button type="button" class="copy">Copy</button></div>
         Click <b>Key-Value Edit</b> to switch back. The <code>{{publishable_key}}</code> parts should be orange or green. <b>Red</b> = Postman can't find the variable: save the collection variables.</li>
-      <li>Method <b>GET</b>, URL <code>{{base_url}}/users</code> → <b>Send</b>.</li>
+      <li>Method <b>GET</b>, URL <code>{{base_url}}/rest/v1/users</code> → <b>Send</b>.</li>
     </ol>
     <p class="note"><b>Got <code>[]</code>?</b> The request worked, but Row Level Security hid every row. Add the temporary dev rules (step 3 on the <a href="../#homework">home page</a>), then send again.</p>
 
@@ -112,7 +112,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <div class="req">
       <h3><span class="method post">POST</span> Create a user</h3>
       <dl>
-        <dt>URL</dt><dd><code>{{base_url}}/users</code></dd>
+        <dt>URL</dt><dd><code>{{base_url}}/rest/v1/users</code></dd>
         <dt>Add header</dt><dd><code>Prefer:return=representation</code> (sends the new row back)</dd>
         <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"name":"Demo User","email":"demo@ticked.app"}</code></pre><button type="button" class="copy">Copy</button></div></dd>
         <dt>Expect</dt><dd><span class="expect">201</span> + the row. <b>Copy its <code>id</code>.</b> Keep this user: your app uses it in Part II.</dd>
@@ -122,7 +122,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <div class="req">
       <h3><span class="method post">POST</span> Create a task</h3>
       <dl>
-        <dt>URL</dt><dd><code>{{base_url}}/tasks</code> (same Prefer header)</dd>
+        <dt>URL</dt><dd><code>{{base_url}}/rest/v1/tasks</code> (same Prefer header)</dd>
         <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"title":"Finish the API lecture","user_id":"PASTE THE USER ID"}</code></pre><button type="button" class="copy">Copy</button></div></dd>
         <dt>Expect</dt><dd><span class="expect">201</span> + the row. <b>Copy the task's <code>id</code></b> (not the user's).</dd>
         <dt>Try</dt><dd>Body <code>{"title":"x"}</code> with no <code>user_id</code>: <b>400</b> "null value in column user_id". The database's rule, passed back by the API.</dd>
@@ -132,7 +132,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <div class="req">
       <h3><span class="method">GET</span> Read the tasks that aren't done</h3>
       <dl>
-        <dt>URL</dt><dd><code>{{base_url}}/tasks?is_complete=eq.false</code></dd>
+        <dt>URL</dt><dd><code>{{base_url}}/rest/v1/tasks?is_complete=eq.false</code></dd>
         <dt>Body</dt><dd>none</dd>
         <dt>Expect</dt><dd><span class="expect">200</span> + a list with your task. <code>eq</code> means equals: the filter lives in the URL.</dd>
       </dl>
@@ -141,7 +141,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <div class="req">
       <h3><span class="method patch">PATCH</span> Tick the task off</h3>
       <dl>
-        <dt>URL</dt><dd><code>{{base_url}}/tasks?id=eq.PASTE THE TASK ID</code></dd>
+        <dt>URL</dt><dd><code>{{base_url}}/rest/v1/tasks?id=eq.PASTE THE TASK ID</code></dd>
         <dt>Body</dt><dd><div class="cmdwrap"><pre class="cmd"><code>{"is_complete":true}</code></pre><button type="button" class="copy">Copy</button></div></dd>
         <dt>Expect</dt><dd><span class="expect">204</span> (done, nothing to send back). Send the GET above again: the task is gone from the "not done" list.</dd>
       </dl>
@@ -150,7 +150,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <div class="req">
       <h3><span class="method delete">DELETE</span> Delete the task</h3>
       <dl>
-        <dt>URL</dt><dd><code>{{base_url}}/tasks?id=eq.PASTE THE TASK ID</code></dd>
+        <dt>URL</dt><dd><code>{{base_url}}/rest/v1/tasks?id=eq.PASTE THE TASK ID</code></dd>
         <dt>Body</dt><dd>none</dd>
         <dt>Expect</dt><dd><span class="expect">204</span>. Check the Table Editor: the task is gone. <b>Leave the user.</b></dd>
         <dt>Careful</dt><dd>204 also comes back when <b>nothing</b> matched (wrong id). To be sure, add <code>Prefer:return=representation</code>: you get the deleted row back, or <code>[]</code> if nothing was deleted. Always filter a PATCH and a DELETE: without <code>?id=eq.</code> it would hit every row.</dd>
@@ -160,7 +160,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
     <h3>5 · Break it on purpose</h3>
     <ol class="steps">
       <li>Change one letter of <code>publishable_key</code> → <b>401</b> "Invalid API key". Change it back.</li>
-      <li>Request <code>{{base_url}}/taks</code> (typo) → <b>404</b>.</li>
+      <li>Request <code>{{base_url}}/rest/v1/taks</code> (typo) → <b>404</b>.</li>
     </ol>
   </section>
 
@@ -171,7 +171,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
       <li>Get the collection: <a class="dl" href="../demo-kit/Ticked-API.postman_collection.json" download>Download Ticked-API.postman_collection.json</a><br>
         or copy the JSON from the box below.</li>
       <li>Postman → <b>Import</b> (top left). Drag the file in, <b>or</b> paste the copied JSON into the box.</li>
-      <li>Click the new <b>Ticked API (Supabase)</b> collection → <b>Variables</b>. Fill in <code>base_url</code> (ending in <code>/rest/v1</code>) and <code>publishable_key</code>. <b>Save</b>.</li>
+      <li>Click the new <b>Ticked API (Supabase)</b> collection → <b>Variables</b>. Fill in <code>base_url</code> (no <code>/rest/v1</code> on the end) and <code>publishable_key</code>. <b>Save</b>.</li>
       <li>Run the requests in their numbered order. After <b>2. Create a user</b>, copy the new id into the <code>user_id</code> variable. After <b>3. Create a task</b>, copy its id into <code>task_id</code>. <b>Save</b> each time. Requests 6 and 7 use <code>{{task_id}}</code>.</li>
     </ol>
     <details>
@@ -187,7 +187,7 @@ Content-Type:application/json</code></pre><button type="button" class="copy">Cop
       <tr><td><code>[]</code> but the Table Editor has rows</td><td>RLS is on with no rule for the publishable key</td><td>Add the dev rules</td></tr>
       <tr><td><b>401</b> "violates row-level security policy"</td><td>Same: RLS said no</td><td>Add the dev rules</td></tr>
       <tr><td><b>401</b> "Invalid API key"</td><td>Wrong or partial key</td><td>Re-copy the publishable key, Save</td></tr>
-      <tr><td><code>PGRST125</code> "Invalid path"</td><td><code>/rest/v1</code> is in the URL twice</td><td><code>base_url</code> already has it: the URL is <code>{{base_url}}/users</code></td></tr>
+      <tr><td><code>PGRST125</code> "Invalid path"</td><td><code>/rest/v1</code> is in the URL twice</td><td>Delete <code>/rest/v1</code> from <code>base_url</code>. The request URL is <code>{{base_url}}/rest/v1/users</code></td></tr>
       <tr><td><b>404</b></td><td>Typo in the table name</td><td>Check the URL</td></tr>
       <tr><td><b>400</b> "null value in column…"</td><td>A required column is missing from the body</td><td>Add it (e.g. <code>user_id</code>)</td></tr>
       <tr><td><b>400</b> "invalid input syntax for type uuid"</td><td>The id in the URL or body isn't a real id</td><td>Paste the whole id, no quotes or spaces</td></tr>

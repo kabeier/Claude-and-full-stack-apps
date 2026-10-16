@@ -115,7 +115,7 @@
   <h2>Live: set up Postman</h2>
   <div class="cols wide-left">
     <ol class="small">
-      <li>Supabase → <b>Integrations → Data API</b>: copy the <b>Project URL</b> (keep <code>/rest/v1</code>, drop the last <code>/</code>)</li>
+      <li>Supabase → <b>Integrations → Data API</b>: copy the <b>Project URL</b> and <b>delete <code>/rest/v1/</code></b> from the end</li>
       <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b></li>
       <li>Postman → new collection <b>Ticked API</b> → <b>Variables</b>: <code>base_url</code>, <code>publishable_key</code></li>
       <li>New request → <b>Headers → Bulk Edit</b> → paste →</li>
@@ -124,9 +124,9 @@
 Authorization:Bearer {{publishable_key}}
 Content-Type:application/json</pre>
   </div>
-  <p class="bottomline">URL: <code>{{base_url}}/users</code> → <b>Send</b></p>
+  <p class="bottomline">URL: <code>{{base_url}}/rest/v1/users</code> → <b>Send</b></p>
   <aside class="notes">
-    <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the Project URL into <code>base_url</code>. It ends in <code>/rest/v1/</code>: keep <code>/rest/v1</code>, delete only the trailing <code>/</code>. Then every request is <code>{{base_url}}/&lt;table&gt;</code>. Getting <code>PGRST125 Invalid path</code>? <code>/rest/v1</code> is in the URL twice.</p>
+    <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the Project URL into <code>base_url</code>. <b>REMINDER: it ends in <code>/rest/v1/</code>. Delete that</b>, so <code>base_url</code> is just <code>https://&lt;id&gt;.supabase.co</code>. The request URL adds it: <code>{{base_url}}/rest/v1/&lt;table&gt;</code>. Same URL the app's <code>.env</code> uses next lecture. Getting <code>PGRST125 Invalid path</code>? <code>/rest/v1</code> is in the URL twice.</p>
     <p>Variables: "Don't paste the key into every request. Save it once." Hit <b>Save</b> on the variables or Postman won't use them.</p>
     <p>Bulk Edit takes all three headers at once. Then <b>Save</b> the request as "Read users". Every new request: <b>Duplicate</b> this one, so the headers come along.</p>
     <p>Menu names move between Supabase releases. The <b>Connect</b> button in the top bar also shows the URL and key.</p>
@@ -165,7 +165,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
 <section class="slide" data-seg="Live: Postman" data-at="23">
   <h2>Live: CRUD on our real database</h2>
   <table class="dbt small">
-    <tr><th>Request</th><th>URL after <code>{{base_url}}/</code></th><th>Body</th><th>Expect</th></tr>
+    <tr><th>Request</th><th>URL after <code>{{base_url}}/rest/v1/</code></th><th>Body</th><th>Expect</th></tr>
     <tr><td class="pk">POST</td><td><code>users</code> + header <code>Prefer:return=representation</code></td><td><code>{"name":"Demo User","email":"demo@ticked.app"}</code></td><td>201 + the row</td></tr>
     <tr><td class="pk">POST</td><td><code>tasks</code> (same Prefer header)</td><td><code>{"title":"Finish the API lecture","user_id":"…"}</code></td><td>201 + the row</td></tr>
     <tr><td class="pk">GET</td><td><code>tasks?is_complete=eq.false</code></td><td>none</td><td>200 + [ … ]</td></tr>
@@ -177,27 +177,27 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
     <p><b>** LIVE, about 8 minutes. ** Keep the Table Editor open in a second window</b> and refresh it after each request: "Postman changed a real row." Each new request: <b>Duplicate</b> the GET users one (keeps the 3 headers). Bodies go in <b>Body → raw → JSON</b>.</p>
     <ol>
       <li><b>Create the Demo User</b><br>
-        <code>POST {{base_url}}/users</code><br>
+        <code>POST {{base_url}}/rest/v1/users</code><br>
         Add header: <code>Prefer:return=representation</code><br>
         Body: <code>{"name":"Demo User","email":"demo@ticked.app"}</code><br>
         Expect: <b>201</b> + the row. <b>Copy its <code>id</code>.</b> Keep this user: next lecture, Ticked uses it.<br>
         (Without the Prefer header: 201 with an empty body.)</li>
       <li><b>Create a task</b><br>
-        <code>POST {{base_url}}/tasks</code> (same Prefer header)<br>
+        <code>POST {{base_url}}/rest/v1/tasks</code> (same Prefer header)<br>
         Body: <code>{"title":"Finish the API lecture","user_id":"PASTE USER ID"}</code><br>
         Expect: <b>201</b> + the row. <b>Copy the task's <code>id</code>.</b></li>
       <li><b>Ask: "What if we leave out user_id?"</b><br>
         Same request, body <code>{"title":"x"}</code><br>
         Expect: <b>400</b> "null value in column user_id". The database's rule, passed back by the API.</li>
       <li><b>Only the tasks that aren't done</b><br>
-        <code>GET {{base_url}}/tasks?is_complete=eq.false</code> (no body)<br>
+        <code>GET {{base_url}}/rest/v1/tasks?is_complete=eq.false</code> (no body)<br>
         Expect: <b>200</b> + our task. "The filter lives in the URL."</li>
       <li><b>Tick it off</b><br>
-        <code>PATCH {{base_url}}/tasks?id=eq.PASTE TASK ID</code><br>
+        <code>PATCH {{base_url}}/rest/v1/tasks?id=eq.PASTE TASK ID</code><br>
         Body: <code>{"is_complete":true}</code><br>
         Expect: <b>204</b> (done, nothing to send back). Run step 4 again: now <code>[]</code>.</li>
       <li><b>Delete it</b><br>
-        <code>DELETE {{base_url}}/tasks?id=eq.PASTE TASK ID</code> (no body)<br>
+        <code>DELETE {{base_url}}/rest/v1/tasks?id=eq.PASTE TASK ID</code> (no body)<br>
         Expect: <b>204</b>. Table Editor: the task is gone. <b>Leave the Demo User.</b></li>
     </ol>
     <p>Short on time? Do 1, 2 and 5, then go to status codes.</p>
