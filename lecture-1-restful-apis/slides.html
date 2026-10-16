@@ -114,7 +114,7 @@
   <h2>Live: set up Postman</h2>
   <div class="cols wide-left">
     <ol class="small">
-      <li>Supabase → <b>Integrations → Data API</b>: copy the <b>Project URL</b></li>
+      <li>Supabase → <b>Integrations → Data API</b>: copy the <b>Project URL</b> (keep <code>/rest/v1</code>, drop the last <code>/</code>)</li>
       <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b></li>
       <li>Postman → new collection <b>Ticked API</b> → <b>Variables</b>: <code>base_url</code>, <code>publishable_key</code></li>
       <li>New request → <b>Headers → Bulk Edit</b> → paste →</li>
@@ -123,9 +123,9 @@
 Authorization:Bearer {{publishable_key}}
 Content-Type:application/json</pre>
   </div>
-  <p class="bottomline">URL: <code>{{base_url}}/rest/v1/users</code> → <b>Send</b></p>
+  <p class="bottomline">URL: <code>{{base_url}}/users</code> → <b>Send</b></p>
   <aside class="notes">
-    <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the URL <b>without</b> <code>/rest/v1</code> into <code>base_url</code> (the request adds it).</p>
+    <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the Project URL into <code>base_url</code>. It ends in <code>/rest/v1/</code>: keep <code>/rest/v1</code>, delete only the trailing <code>/</code>. Then every request is <code>{{base_url}}/&lt;table&gt;</code>. Getting <code>PGRST125 Invalid path</code>? <code>/rest/v1</code> is in the URL twice.</p>
     <p>Variables: "Don't paste the key into every request. Save it once." Hit <b>Save</b> on the variables or Postman won't use them.</p>
     <p>Bulk Edit takes all three headers at once. Then <b>Save</b> the request as "Read users". Every new request: <b>Duplicate</b> this one, so the headers come along.</p>
     <p>Menu names move between Supabase releases. The <b>Connect</b> button in the top bar also shows the URL and key.</p>
@@ -164,7 +164,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
 <section class="slide" data-seg="Live: Postman" data-at="23">
   <h2>Live: CRUD on our real database</h2>
   <table class="dbt small">
-    <tr><th>Request</th><th>URL after <code>{{base_url}}/rest/v1/</code></th><th>Body</th><th>Expect</th></tr>
+    <tr><th>Request</th><th>URL after <code>{{base_url}}/</code></th><th>Body</th><th>Expect</th></tr>
     <tr><td class="pk">POST</td><td><code>users</code> + header <code>Prefer:return=representation</code></td><td><code>{"name":"Demo User","email":"demo@ticked.app"}</code></td><td>201 + the row</td></tr>
     <tr><td class="pk">POST</td><td><code>tasks</code> (same Prefer header)</td><td><code>{"title":"Finish the API lecture","user_id":"…"}</code></td><td>201 + the row</td></tr>
     <tr><td class="pk">GET</td><td><code>tasks?is_complete=eq.false</code></td><td>none</td><td>200 + [ … ]</td></tr>

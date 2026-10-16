@@ -116,13 +116,13 @@
 
     <h4>2 · Find your API's address and key</h4>
     <ol class="steps">
-      <li>In your Supabase project: <b>Integrations → Data API</b>. Copy the <b>Project URL</b> (without <code>/rest/v1</code>). The <b>Docs</b> link there explains every endpoint for your tables.</li>
+      <li>In your Supabase project: <b>Integrations → Data API</b>. Copy the <b>Project URL</b>. It ends in <code>/rest/v1/</code>: keep <code>/rest/v1</code>, delete only the last <code>/</code>. That's your <code>base_url</code>: <code>https://your-project-id.supabase.co/rest/v1</code>. The <b>Docs</b> link there explains every endpoint for your tables.</li>
       <li><b>Project Settings → API Keys</b>: copy the <b>Publishable key</b>. Never use the secret key in Postman or in front-end code.</li>
     </ol>
 
     <h4>3 · Let the publishable key in (temporary)</h4>
     <ol class="steps">
-      <li>Send <code>GET {{base_url}}/rest/v1/&lt;a table&gt;</code>. If you get <code>[]</code> but the Table Editor has rows, Row Level Security is on with no rules.</li>
+      <li>Send <code>GET {{base_url}}/&lt;a table&gt;</code>. If you get <code>[]</code> but the Table Editor has rows, Row Level Security is on with no rules.</li>
       <li>In your <code>supabase</code> folder, start <code>claude</code> and paste this (change the table names to yours):
         <div class="cmdwrap"><pre class="cmd" style="white-space:pre-wrap"><code>My tables have Row Level Security on with no policies, so my publishable key gets [] back in Postman and can't add rows. We don't have logins yet.
 
@@ -175,7 +175,7 @@ Show me the plan (what moves where) first and wait for my approval.</code></pre>
 
     <h4>7 · Keep the key secret</h4>
     <ol class="steps">
-      <li>Make <code>front-end/.env</code> (next to <code>package.json</code>) with your values, no quotes:
+      <li>Make <code>front-end/.env</code> (next to <code>package.json</code>) with your values, no quotes. The URL here has <b>no</b> <code>/rest/v1</code> (the code adds it):
         <div class="cmdwrap"><pre class="cmd"><code>VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-publishable-key</code></pre><button type="button" class="copy">Copy</button></div></li>
       <li>Add a line with <code>.env</code> to the <code>.gitignore</code> in your project root (make the file if it isn't there). Run <code>git status</code>: <code>.env</code> must <b>not</b> be listed.</li>

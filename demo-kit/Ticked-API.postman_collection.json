@@ -1,13 +1,13 @@
 {
   "info": {
     "name": "Ticked API (Supabase)",
-    "description": "The requests from the RESTful APIs lecture. Set the collection variables base_url and publishable_key first (Collection \u2192 Variables). After POST /users and POST /tasks, copy the new ids into user_id and task_id.",
+    "description": "The requests from the RESTful APIs lecture. Set the collection variables base_url (the Project URL, ending in /rest/v1 with no trailing slash) and publishable_key first (Collection \u2192 Variables). After POST /users and POST /tasks, copy the new ids into user_id and task_id.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "base_url",
-      "value": "https://<your-project-id>.supabase.co"
+      "value": "https://<your-project-id>.supabase.co/rest/v1"
     },
     {
       "key": "publishable_key",
@@ -42,7 +42,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/users?select=*"
+          "raw": "{{base_url}}/users?select=*"
         },
         "body": {
           "mode": "raw",
@@ -79,7 +79,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/users"
+          "raw": "{{base_url}}/users"
         },
         "body": {
           "mode": "raw",
@@ -116,7 +116,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/tasks"
+          "raw": "{{base_url}}/tasks"
         },
         "body": {
           "mode": "raw",
@@ -149,7 +149,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/tasks?select=*"
+          "raw": "{{base_url}}/tasks?select=*"
         }
       }
     },
@@ -172,7 +172,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/tasks?is_complete=eq.false"
+          "raw": "{{base_url}}/tasks?is_complete=eq.false"
         }
       }
     },
@@ -195,7 +195,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/tasks?id=eq.{{task_id}}"
+          "raw": "{{base_url}}/tasks?id=eq.{{task_id}}"
         },
         "body": {
           "mode": "raw",
@@ -228,7 +228,7 @@
           }
         ],
         "url": {
-          "raw": "{{base_url}}/rest/v1/tasks?id=eq.{{task_id}}"
+          "raw": "{{base_url}}/tasks?id=eq.{{task_id}}"
         },
         "description": "204 No Content. Always filter a DELETE."
       }
