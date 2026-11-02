@@ -15,6 +15,7 @@
   <h1>RESTful APIs</h1>
   <p class="sub">The bridge between Ticked and its database. Today we cross it by hand, with Postman.</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Today we cross the bridge between Ticked and its database by hand, using Postman.</p>
     <p><b>Before class</b> (demo-kit/RUNBOOK.md): <code>~/demos/ticked</code> is as the database lecture left it (app + <code>supabase/</code>). The <code>task-manager</code> Supabase project has its 5 tables, RLS on, <b>no policies, no rows</b>. Postman open and signed in. Tabs: Supabase dashboard, Postman, this deck.</p>
     <p>Press <b>T</b> to start the clock. Target: 40 minutes.</p>
   </aside>
@@ -24,6 +25,7 @@
   <img src="../diagrams/DB2-04-missing-api.png" alt="Ticked (front-end) and the Supabase database are both ready, but the API between them is a dashed box">
   <div class="src">from the database lecture</div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Where we left off: the app and the database can't talk yet.</p>
     <p>"Last time we ended here. Front-end ✓, database ✓, and a dashed box in the middle. Today we learn what's in that box and use it by hand. Next lecture, Ticked uses it."</p>
     <p>Today: what an API is, the 4 CRUD requests, then live in Postman against our real database.</p>
   </aside>
@@ -34,6 +36,7 @@
   <img src="../diagrams/FS1-01-the-api.png" alt="Restaurant: the front-end dining room sends a request to the API kitchen, which talks SQL to the database storage room and sends back a response">
   <div class="src">diagrams/FS1-01-the-api.tldr</div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> A picture of what an API does.</p>
     <p>Same restaurant as before. The <b>API</b> is the kitchen: it takes an order (a <b>request</b>), checks it against the rules, gets what it needs from storage, and sends back a <b>response</b>.</p>
     <p>Why not let the browser talk to the database directly? Point at the yellow box: security, consistency, control.</p>
     <p>Point at the orange box: "Who builds the kitchen? For us, Supabase already did. It's called PostgREST: every table we made got its own web address. So today we don't build an API, we <b>use</b> one."</p>
@@ -50,6 +53,7 @@
   </div>
   <p class="bottomline">API = how two programs talk. REST = a set of conventions for doing it over HTTP.</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> The four habits of a well-behaved REST API.</p>
     <p>REST is <b>Representational State Transfer</b>. It's a set of conventions, not a library. An API that follows them is "RESTful".</p>
     <p>Stateless matters today: that's why every Postman request will carry the key in its headers.</p>
   </aside>
@@ -69,6 +73,7 @@
     <p class="small"><b>DELETE</b> without a filter could empty the table. Always say which row.</p>
   </div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> CRUD: the four things every app does to data, and how they map to HTTP.</p>
     <p>Read across each row: "Create is a POST, which is an INSERT in SQL, it needs a body, and a good answer is 201."</p>
     <p>PUT vs PATCH: "PUT a task with only a title, and the other columns get wiped or reset. PATCH just the title, and the rest stays." PUT is for "the user edited every field in a form."</p>
     <p>Supabase has protection against an unfiltered DELETE, but don't rely on it.</p>
@@ -87,6 +92,7 @@
   </ol>
   <p class="muted small" style="margin-top:12px">In chat: the <b>method</b> and the <b>URL</b>. Bonus: does it need a body?</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Quick fire: an action in Ticked appears, and everyone types the request it needs.</p>
     <p>The only activity today, about 3 minutes. Open <a href="../ticked/" target="_blank" rel="noopener">Ticked (front-end only)</a> (also on the homepage). For each one: <b>ask the question</b>, do the click in the app, wait 10 seconds for chat, then give the answer.</p>
     <ol>
       <li><b>"Open the Tasks page."</b> Click <b>Tasks</b>.<br>Answer: <code>GET /tasks</code> (no body)</li>
@@ -104,6 +110,7 @@
   <img src="../diagrams/FS1-02-anatomy.png" alt="A request: method, URL (project, /rest/v1/, table, filter), headers (apikey, Authorization, Content-Type) and body; a response: status code and JSON body">
   <div class="src">diagrams/FS1-02-anatomy.tldr</div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> A picture of the parts of a Supabase API request.</p>
     <p>Walk it left to right: method, then the URL in four parts. Then the three headers Supabase wants on every request, and the body for writes.</p>
     <p>The <b>publishable key</b> is safe in a browser: it can only do what the RLS rules allow. The <b>secret</b> key skips all rules: never in Postman screenshots, never in front-end code.</p>
     <p>Response: a status code (the first clue when debugging) and a JSON body.</p>
@@ -126,6 +133,7 @@ Content-Type:application/json</pre>
   </div>
   <p class="bottomline">URL: <code>{{base_url}}/rest/v1/users</code> → <b>Send</b></p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> We set up Postman live with the URL and key.</p>
     <p><b>** LIVE, about 4 minutes. **</b> In Supabase, show the Data API page, including its <b>Docs</b> link: "Supabase wrote the manual for our API from our tables." Copy the Project URL into <code>base_url</code>. <b>REMINDER: it ends in <code>/rest/v1/</code>. Delete that</b>, so <code>base_url</code> is just <code>https://&lt;id&gt;.supabase.co</code>. The request URL adds it: <code>{{base_url}}/rest/v1/&lt;table&gt;</code>. Same URL the app's <code>.env</code> uses next lecture. Getting <code>PGRST125 Invalid path</code>? <code>/rest/v1</code> is in the URL twice.</p>
     <p>Variables: "Don't paste the key into every request. Save it once." Hit <b>Save</b> on the variables or Postman won't use them.</p>
     <p>Bulk Edit takes all three headers at once. Then <b>Save</b> the request as "Read users". Every new request: <b>Duplicate</b> this one, so the headers come along.</p>
@@ -137,6 +145,7 @@ Content-Type:application/json</pre>
   <img src="../diagrams/FS1-03-rls.png" alt="The publishable key is the anon role; the RLS lock checks for a rule; with no rules GET returns an empty list and POST returns 401; a temporary dev rule lets anon in; the dashboard and Claude walk past the lock">
   <div class="src">diagrams/FS1-03-rls.tldr</div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> A picture of Row Level Security, and why our requests get blocked.</p>
     <p><b>** LIVE first: **</b> Send <code>GET /users</code>. It says <b>200</b> and <code>[]</code>. Duplicate it, make it <code>POST /users</code> with body <code>{ "name": "Demo User", "email": "demo@ticked.app" }</code>. It says <b>401</b>: "new row violates row-level security policy".</p>
     <p>"200 but empty, and 401 even though the key is right. Read the message, not just the number." Then show this diagram.</p>
     <p>"In the database lecture we turned Row Level Security on and wrote no rules. The publishable key is the <b>anon</b> role, and anon has no rule, so the lock stays shut. The dashboard and Claude's MCP act as the owner: that's why they saw everything."</p>
@@ -155,6 +164,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
 "dev: open access until auth". Show me the SQL first and wait for my approval.</pre>
   <p class="bottomline">Read the SQL before you approve. Then check: Authentication → Policies.</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Claude adds a temporary rule so our requests can get through.</p>
     <p><b>** LIVE, about 3 minutes. **</b> <code>cd ~/demos/ticked/supabase && claude</code>. Paste the prompt (it's in <code>demo-kit/prompts.md</code>). Claude shows SQL like <code>create policy "dev: open access until auth" on public.tasks for all to anon using (true) with check (true);</code></p>
     <p>Read one line out loud: "for all = select, insert, update, delete. to anon = the publishable key. using (true) = every row." Approve the MCP call.</p>
     <p>Dashboard: <b>Authentication → Policies</b> shows one rule per table (on some versions it's under <b>Database → Policies</b>).</p>
@@ -174,6 +184,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
   </table>
   <p class="bottomline">After each one: the status code, the body, and the Table Editor.</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> We run real create, read, update and delete requests on our own database.</p>
     <p><b>** LIVE, about 8 minutes. ** Keep the Table Editor open in a second window</b> and refresh it after each request: "Postman changed a real row." Each new request: <b>Duplicate</b> the GET users one (keeps the 3 headers). Bodies go in <b>Body → raw → JSON</b>.</p>
     <ol>
       <li><b>Create the Demo User</b><br>
@@ -219,6 +230,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
     <tr><td>500 Server Error</td><td>the server broke</td><td>not your request: check the logs</td></tr>
   </table>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Status codes: what each one we saw today means.</p>
     <p><b>** LIVE, 1 minute: **</b> break two things on purpose. Change one letter of the key: <b>401</b> "Invalid API key". Change the URL to <code>/taks</code>: <b>404</b>.</p>
     <p>2xx = it worked. 4xx = your request has a problem. 5xx = the server has a problem.</p>
     <p>401 vs 403: with the publishable key and no login, Supabase says 401 when RLS refuses. After the authentication lecture, a logged-in user who breaks a rule gets 403.</p>
@@ -230,6 +242,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
   <h2>Today Postman sent the requests. Next, Ticked does.</h2>
   <p>Same URLs, same headers, same JSON. We move them into a service layer, and Ticked finally remembers.</p>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Today Postman sent the requests. Next time, Ticked does.</p>
     <p>Recap: the API is the bridge. CRUD = POST, GET, PATCH/PUT, DELETE. The status code is the first clue. RLS decides what the publishable key may see.</p>
   </aside>
 </section>
@@ -253,6 +266,7 @@ write all five tables (users, projects, tasks, tags, task_tags). Name each one
     </div>
   </div>
   <aside class="notes">
+    <p class="plan"><b>The plan:</b> Walk through Homework Part I.</p>
     <p>The steps are on the class site. "The notes you write about your endpoints are context for Claude next lecture."</p>
     <p>Postman: free account at postman.com, desktop app or web.</p>
   </aside>
